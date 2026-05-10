@@ -1,6 +1,6 @@
 // ===== FIREBASE CONFIG =====
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
-import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-auth.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-auth.js";
 import { getFirestore, doc, setDoc, getDoc, collection, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -24,7 +24,26 @@ export async function loginGoogle() {
     const result = await signInWithPopup(auth, provider);
     return result.user;
   } catch(e) {
+    if (e.code === 'auth/popup-blocked' || e.code === 'auth/cancelled-popup-request') {
+      try {
+        await signInWithRedirect(auth, provider);
+        return null;
+      } catch(e2) {
+        console.error(e2);
+        return null;
+      }
+    }
     console.error(e);
+    return null;
+  }
+}
+
+export async function getRedirectResult() {
+  try {
+    const { getRedirectResult: grr } = await import("https://www.gstatic.com/firebasejs/12.12.1/firebase-auth.js");
+    const result = await grr(auth);
+    return result ? result.user : null;
+  } catch(e) {
     return null;
   }
 }
