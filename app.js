@@ -4,12 +4,11 @@ const MESES = [
   'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'
 ];
 
-// ===== ESTADO GLOBAL =====
 let currentUser = null;
 let modoGoogle  = false;
-let userId      = 'local'; // ID por defecto para modo invitado
+let userId      = 'local';
 
-// ===== STORAGE (con prefijo por usuario) =====
+// ===== STORAGE =====
 function getData(key) {
   try { return JSON.parse(localStorage.getItem(userId + '_' + key)) || []; }
   catch { return []; }
@@ -18,66 +17,13 @@ function setData(key, val) {
   localStorage.setItem(userId + '_' + key, JSON.stringify(val));
 }
 
-// ===== LOGIN LOCAL (admin) =====
-
-function logout() {
-  if (modoGoogle && currentUser) {
-    import('./firebase.js').then(({ logoutGoogle }) => logoutGoogle());
-  }
-  currentUser = null;
-  modoGoogle  = false;
-  userId      = 'invitado_' + localStorage.getItem('cashiro-device-id');
-  entrarAlApp('Invitado', 'Sin cuenta — tus datos son locales');
-  showToast('✅ Sesión cerrada');
-}
-
-// ===== ENTRADA A LA APP =====
-function entrarAlApp(nombre, detalle) {
-  ocultarTodosScreens();
-  showScreen('screen-dashboard');
-  renderDashboard();
-
-  const nombreEl = document.querySelector('.perfil-nombre');
-  const planEl   = document.querySelector('.perfil-plan');
-  if (nombreEl) nombreEl.textContent = nombre;
-  if (planEl)   planEl.textContent   = detalle;
-
-  // Mostrar u ocultar opciones según el tipo de usuario
-  const esInvitado = !modoGoogle;
-  const btnGoogle      = document.getElementById('btn-conectar-google');
-  const btnSalir       = document.getElementById('btn-cerrar-sesion');
-  const cardPass       = document.getElementById('card-cambiar-pass');
-
-  if (btnGoogle) btnGoogle.style.display = esInvitado  ? 'block' : 'none';
-  if (btnSalir)  btnSalir.style.display  = !esInvitado ? 'block' : 'none';
-  if (cardPass)  cardPass.style.display  = !esInvitado ? 'block' : 'none';
-}
-
-function ocultarTodosScreens() {
-  document.querySelectorAll('.screen').forEach(s => {
-    s.classList.remove('active');
-    s.style.display = '';
-  });
-}
-
 // ===== NAVEGACIÓN =====
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 
   const nav = document.getElementById('bottom-nav-global');
-  if (nav) {
-    if (id === 'screen-bienvenida') {
-      nav.style.display = 'none';
-    } else {
-      nav.style.display = 'flex';
-      nav.style.position = 'fixed';
-      nav.style.bottom = '0';
-      nav.style.left = '0';
-      nav.style.right = '0';
-      nav.style.zIndex = '100';
-    }
-  }
+  if (nav) nav.style.display = id === 'screen-bienvenida' ? 'none' : 'flex';
 
   if (id === 'screen-dashboard') actualizarNav('nav-inicio');
   if (id === 'screen-historial') actualizarNav('nav-movimientos');
@@ -95,10 +41,22 @@ function showScreen(id) {
   }
 }
 
+function actualizarNav(activeId) {
+  ['nav-inicio','nav-movimientos','nav-servicios','nav-perfil'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.toggle('active', el.id === activeId);
+  });
+}
+
 function navTo(screenId, btn) {
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
   showScreen(screenId);
+}
+
+function ocultarTodosScreens() {
+  document.querySelectorAll('.screen').forEach(s => {
+    s.classList.remove('active');
+    s.style.display = '';
+  });
 }
 
 // ===== TOAST =====
@@ -113,6 +71,54 @@ function showToast(msg) {
   t.textContent = msg;
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ===== ENTRADA =====
+function entrarAlApp(nombre, detalle) {
+  const nav = document.getElementById('bottom-nav-global');
+  if (nav) nav.style.display = 'flex';
+  showScreen('screen-dashboard');
+
+  const nombreEl = document.querySelector('.perfil-nombre');
+  const planEl   = document.querySelector('.perfil-plan');
+  if (nombreEl) nombreEl.textContent = nombre;
+  if (planEl)   planEl.textContent   = detalle;
+
+  const esInvitado = !modoGoogle;
+  const btnGoogle  = document.getElementById('btn-conectar-google');
+  const btnSalir   = document.getElementById('btn-cerrar-sesion');
+  const cardPass   = document.getElementById('card-cambiar-pass');
+  if (btnGoogle) btnGoogle.style.display = esInvitado  ? 'block' : 'none';
+  if (btnSalir)  btnSalir.style.display  = !esInvitado ? 'block' : 'none';
+  if (cardPass)  cardPass.style.display  = !esInvitado ? 'block' : 'none';
+}
+
+function entrarComoInvitado() {
+  const deviceId = localStorage.getItem('cashiro-device-id') || generarDeviceId();
+  userId      = 'invitado_' + deviceId;
+  modoGoogle  = false;
+  currentUser = null;
+  entrarAlApp('Sin cuenta', 'Datos solo en este dispositivo');
+  showToast('💡 Conéctate con Google para respaldar');
+}
+
+function generarDeviceId() {
+  const id = 'dev_' + Math.random().toString(36).slice(2);
+  localStorage.setItem('cashiro-device-id', id);
+  return id;
+}
+
+function logout() {
+  if (modoGoogle && currentUser) {
+    import('./firebase.js').then(({ logoutGoogle }) => logoutGoogle());
+  }
+  currentUser = null;
+  modoGoogle  = false;
+  userId      = 'local';
+  const nav = document.getElementById('bottom-nav-global');
+  if (nav) nav.style.display = 'none';
+  ocultarTodosScreens();
+  document.getElementById('screen-bienvenida').classList.add('active');
 }
 
 // ===== INGRESO MENSUAL =====
@@ -297,7 +303,7 @@ function eliminarServicio(id) {
 }
 
 function renderServicios() {
-  const lista     = document.getElementById('lista-servicios');
+  const lista = document.getElementById('lista-servicios');
   if (!lista) return;
   const servicios = getData('servicios');
   lista.innerHTML = servicios.length === 0
@@ -315,14 +321,14 @@ function renderServicios() {
       </div>`).join('');
 }
 
-// ===== LÓGICA GASTOS FIJOS =====
+// ===== GASTOS FIJOS =====
 function obtenerGastosDeMes(gastos, mes, anio) {
   const resultado = [];
   gastos.forEach(g => {
     if (g.tipo === 'fijo') {
       if (g.activo === false) return;
-      const inicio     = new Date(g.fecha + 'T00:00:00');
-      const despues    = anio > inicio.getFullYear() ||
+      const inicio  = new Date(g.fecha + 'T00:00:00');
+      const despues = anio > inicio.getFullYear() ||
         (anio === inicio.getFullYear() && mes >= inicio.getMonth());
       if (!despues) return;
       if (g.fechaFin) {
@@ -448,8 +454,8 @@ function renderHistorial() {
   mesesOrdenados.forEach(({ mes, anio }, i) => {
     const del_mes = obtenerGastosDeMes(gastos, mes, anio)
       .sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
-    const total   = del_mes.reduce((s, g) => s + g.monto, 0);
-    const porCat  = {};
+    const total  = del_mes.reduce((s, g) => s + g.monto, 0);
+    const porCat = {};
     del_mes.forEach(g => { porCat[g.cat] = (porCat[g.cat] || 0) + g.monto; });
     const catHtml = Object.entries(porCat).sort((a,b) => b[1]-a[1]).map(([cat, tot]) => `
       <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)">
@@ -605,69 +611,15 @@ async function handleGoogleLogin() {
     console.error(e);
     showToast('❌ Error al conectar con Google');
   }
-  }
+}
 
-    // Guardar datos del invitado antes de cambiar userId
-    const gastosInvitado   = getData('gastos');
-    const ingresosInvitado = getData('ingresos');
-    const serviciosInvitado = getData('servicios');
-    const hayDatosLocales  = gastosInvitado.length || ingresosInvitado.length || serviciosInvitado.length;
-
-    // Cambiar a cuenta Google
-    currentUser = user;
-    modoGoogle  = true;
-    userId      = user.uid;
-
-    // Verificar si ya tiene datos en Firebase
-    const [gastosNube, ingresosNube, serviciosNube] = await Promise.all([
-      obtenerColeccion(user.uid, 'gastos'),
-      obtenerColeccion(user.uid, 'ingresos'),
-      obtenerColeccion(user.uid, 'servicios')
-    ]);
-
-    const hayDatosNube = gastosNube.length || ingresosNube.length || serviciosNube.length;
-
-    if (hayDatosLocales && !hayDatosNube) {
-      // Caso 1: tiene datos locales y nube vacía → subir todo
-      showToast('☁️ Subiendo tus datos a la nube...');
-      const promesas = [];
-      gastosInvitado.forEach(g =>
-        promesas.push(guardarDato(user.uid, 'gastos', g.id, g)));
-      ingresosInvitado.forEach(i =>
-        promesas.push(guardarDato(user.uid, 'ingresos', `${i.mes}_${i.anio}`, i)));
-      serviciosInvitado.forEach(s =>
-        promesas.push(guardarDato(user.uid, 'servicios', s.id, s)));
-      await Promise.all(promesas);
-      setData('gastos',    gastosInvitado);
-      setData('ingresos',  ingresosInvitado);
-      setData('servicios', serviciosInvitado);
-      showToast('✅ Datos migrados a tu cuenta Google');
-
-} else if (hayDatosLocales && hayDatosNube) {
-      // Caso 2: Gmail diferente con datos en nube → usar siempre los de la nube
-      setData('gastos',    gastosNube);
-      setData('ingresos',  ingresosNube);
-      setData('servicios', serviciosNube);
-      showToast('☁️ Bienvenido de nuevo — datos recuperados');
-
-    } else if (!hayDatosLocales && hayDatosNube) {
-      // Caso 3: sin datos locales, tiene en nube → cargar de nube
-      setData('gastos',    gastosNube);
-      setData('ingresos',  ingresosNube);
-      setData('servicios', serviciosNube);
-      showToast('☁️ Datos recuperados de tu cuenta');
-
-    } else {
-      // Caso 4: todo vacío → cuenta nueva limpia
-      showToast('✅ Cuenta nueva lista');
-    }
-
-    entrarAlApp(user.displayName || 'Usuario', user.email);
-
-  } catch(e) {
-    console.error(e);
-    showToast('❌ Error al conectar con Google');
-  }
+// ===== FAB MENU =====
+function toggleFabMenu() {
+  const menu = document.getElementById('fab-menu');
+  menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+}
+function cerrarFabMenu() {
+  document.getElementById('fab-menu').style.display = 'none';
 }
 
 // ===== UTILIDADES =====
@@ -677,54 +629,7 @@ function formatFecha(str) {
   const [y, m, d] = str.split('-');
   return `${d}/${m}/${y}`;
 }
-// ===== FAB MENU =====
-function toggleFabMenu() {
-  const menu = document.getElementById('fab-menu');
-  const isOpen = menu.style.display !== 'none';
-  menu.style.display = isOpen ? 'none' : 'block';
-}
-function cerrarFabMenu() {
-  document.getElementById('fab-menu').style.display = 'none';
-}
 
-// ===== INIT =====
-// ===== INVITADO =====
-function entrarComoInvitado() {
-  // Limpiar cualquier caché de invitado anterior
-  const deviceId = localStorage.getItem('cashiro-device-id') || generarDeviceId();
-  userId      = 'invitado_' + deviceId;
-  modoGoogle  = false;
-  currentUser = null;
-  entrarAlApp('Sin cuenta', 'Datos solo en este dispositivo');
-  showToast('💡 Conéctate con Google para respaldar');
-}
-
-function generarDeviceId() {
-  const id = 'dev_' + Math.random().toString(36).slice(2);
-  localStorage.setItem('cashiro-device-id', id);
-  return id;
-}
-
-// ===== LOGOUT MEJORADO =====
-function logout() {
-  if (modoGoogle && currentUser) {
-    import('./firebase.js').then(({ logoutGoogle }) => logoutGoogle());
-  }
-  // Limpiar estado completamente
-  currentUser = null;
-  modoGoogle  = false;
-  userId      = 'local';
-
-  // Limpiar caché del invitado para evitar mezcla de datos
-  const deviceId = generarDeviceId(); // genera nuevo ID limpio
-  localStorage.setItem('cashiro-device-id', deviceId);
-
-  // Volver a pantalla de bienvenida
-  ocultarTodosScreens();
-  document.getElementById('screen-bienvenida').classList.add('active');
-}
-
-// ===== INIT =====
 // ===== INIT =====
 document.addEventListener('DOMContentLoaded', async () => {
   const hoy     = new Date().toISOString().split('T')[0];
@@ -744,6 +649,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   const nav = document.getElementById('bottom-nav-global');
   if (nav) nav.style.display = 'none';
 
+  const fabMenu = document.getElementById('fab-menu');
+  if (fabMenu) fabMenu.style.display = 'none';
+
   // Verificar si viene de redirect de Google
   try {
     const { checkRedirectResult, obtenerColeccion } = await import('./firebase.js');
@@ -752,21 +660,38 @@ document.addEventListener('DOMContentLoaded', async () => {
       currentUser = user;
       modoGoogle  = true;
       userId      = user.uid;
-      const [gastos, ingresos, servicios] = await Promise.all([
+      const gastosInvitado    = getData('gastos');
+      const ingresosInvitado  = getData('ingresos');
+      const serviciosInvitado = getData('servicios');
+      const hayLocales = gastosInvitado.length || ingresosInvitado.length || serviciosInvitado.length;
+      const [gastosNube, ingresosNube, serviciosNube] = await Promise.all([
         obtenerColeccion(user.uid, 'gastos'),
         obtenerColeccion(user.uid, 'ingresos'),
         obtenerColeccion(user.uid, 'servicios')
       ]);
-      if (gastos.length)    setData('gastos', gastos);
-      if (ingresos.length)  setData('ingresos', ingresos);
-      if (servicios.length) setData('servicios', servicios);
+      const hayNube = gastosNube.length || ingresosNube.length || serviciosNube.length;
+      if (hayLocales && !hayNube) {
+        const { guardarDato } = await import('./firebase.js');
+        const promesas = [];
+        gastosInvitado.forEach(g   => promesas.push(guardarDato(user.uid, 'gastos',    g.id,              g)));
+        ingresosInvitado.forEach(i => promesas.push(guardarDato(user.uid, 'ingresos',  `${i.mes}_${i.anio}`, i)));
+        serviciosInvitado.forEach(s=> promesas.push(guardarDato(user.uid, 'servicios', s.id,              s)));
+        await Promise.all(promesas);
+      } else if (hayNube) {
+        setData('gastos',    gastosNube);
+        setData('ingresos',  ingresosNube);
+        setData('servicios', serviciosNube);
+      }
       entrarAlApp(user.displayName || 'Usuario', user.email);
       showToast('✅ Bienvenido ' + (user.displayName || '').split(' ')[0]);
       return;
     }
   } catch(e) {
-    console.error(e);
+    console.error('Error redirect:', e);
   }
+
+  // Mostrar pantalla de bienvenida
+  document.getElementById('screen-bienvenida').classList.add('active');
 
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/sw.js').catch(() => {});
