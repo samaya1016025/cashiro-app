@@ -64,6 +64,27 @@ function ocultarTodosScreens() {
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
+
+  const nav = document.getElementById('bottom-nav-global');
+  if (nav) {
+    if (id === 'screen-bienvenida') {
+      nav.style.display = 'none';
+    } else {
+      nav.style.display = 'flex';
+      nav.style.position = 'fixed';
+      nav.style.bottom = '0';
+      nav.style.left = '0';
+      nav.style.right = '0';
+      nav.style.zIndex = '100';
+    }
+  }
+
+  if (id === 'screen-dashboard') actualizarNav('nav-inicio');
+  if (id === 'screen-historial') actualizarNav('nav-movimientos');
+  if (id === 'screen-servicios') actualizarNav('nav-servicios');
+  if (id === 'screen-perfil')    actualizarNav('nav-perfil');
+  if (id === 'screen-ingreso' || id === 'screen-gasto') actualizarNav(null);
+
   if (id === 'screen-dashboard') renderDashboard();
   if (id === 'screen-servicios') renderServicios();
   if (id === 'screen-historial') renderHistorial();
