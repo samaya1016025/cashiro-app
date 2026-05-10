@@ -1,6 +1,20 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
-import { getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc, collection, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
+import { 
+  getAuth, 
+  GoogleAuthProvider, 
+  signInWithRedirect, 
+  getRedirectResult,
+  signOut, 
+  onAuthStateChanged 
+} from "https://www.gstatic.com/firebasejs/12.12.1/firebase-auth.js";
+import { 
+  getFirestore, 
+  doc, 
+  setDoc, 
+  collection, 
+  getDocs, 
+  deleteDoc 
+} from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDZBOgd5K1HGdl-r3EZpyp6PRZ33qIn9Cc",
@@ -12,37 +26,45 @@ const firebaseConfig = {
   measurementId: "G-XPY90GYMKQ"
 };
 
-const app     = initializeApp(firebaseConfig);
-const auth    = getAuth(app);
-const db      = getFirestore(app);
+const app      = initializeApp(firebaseConfig);
+const auth     = getAuth(app);
+const db       = getFirestore(app);
 const provider = new GoogleAuthProvider();
 
 export async function loginGoogle() {
   try {
     await signInWithRedirect(auth, provider);
-    return null;
   } catch(e) {
-    console.error(e);
-    return null;
+    console.error('loginGoogle error:', e);
   }
 }
 
 export async function checkRedirectResult() {
   try {
     const result = await getRedirectResult(auth);
-    return result ? result.user : null;
+    if (result && result.user) return result.user;
+    return null;
   } catch(e) {
-    console.error(e);
+    console.error('checkRedirectResult error:', e);
     return null;
   }
 }
 
-export async function logoutGoogle() {
-  await signOut(auth);
-}
-
 export function onUserChange(callback) {
   onAuthStateChanged(auth, callback);
+}
+
+export async function getCurrentUser() {
+  return new Promise((resolve) => {
+    const unsub = onAuthStateChanged(auth, user => {
+      unsub();
+      resolve(user);
+    });
+  });
+}
+
+export async function logoutGoogle() {
+  await signOut(auth);
 }
 
 export async function guardarDato(userId, coleccion, id, data) {

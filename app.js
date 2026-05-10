@@ -652,10 +652,53 @@ document.addEventListener('DOMContentLoaded', async () => {
   const fabMenu = document.getElementById('fab-menu');
   if (fabMenu) fabMenu.style.display = 'none';
 
-  // Verificar si viene de redirect de Google
+// Verificar sesión activa o redirect de Google
   try {
-    const { checkRedirectResult, obtenerColeccion } = await import('./firebase.js');
-    const user = await checkRedirectResult();
+    const { checkRedirectResult, getCurrentUser, obtenerColeccion } = await import('./firebase.js');
+
+    // Primero intentar redirect result
+    let user = await checkRedirectResult();
+
+    // Si no hay redirect, verificar si ya hay sesión activa
+    if (!user) user = await getCurrentUser();
+
+    if (user) {
+      currentUser = user;
+      modoGoogle  = true;
+      userId      = user.uid;
+
+      const gastosInvitado    = getData('gastos');
+      const ingresosInvitado  = getData('ingresos');
+      const serviciosInvitado = getData('servicios');
+      const hayLocales = gastosInvitado.length || ingresosInvitado.length || serviciosInvitado.length;
+
+      const [gastosNube, ingresosNube, serviciosNube] = await Promise.all([
+        obtenerColeccion(user.uid, 'gastos'),
+        obtenerColeccion(user.uid, 'ingresos'),
+        obtenerColeccion(user.uid, 'servicios')
+      ]);
+      const hayNube = gastosNube.length || ingresosNube.length || serviciosNube.length;
+
+      if (hayLocales && !hayNube) {
+        const { guardarDato } = await import('./firebase.js');
+        const promesas = [];
+        gastosInvitado.forEach(g    => promesas.push(guardarDato(user.uid, 'gastos',    g.id,                 g)));
+        ingresosInvitado.forEach(i  => promesas.push(guardarDato(user.uid, 'ingresos',  `${i.mes}_${i.anio}`, i)));
+        serviciosInvitado.forEach(s => promesas.push(guardarDato(user.uid, 'servicios', s.id,                 s)));
+        await Promise.all(promesas);
+      } else if (hayNube) {
+        setData('gastos',    gastosNube);
+        setData('ingresos',  ingresosNube);
+        setData('servicios', serviciosNube);
+      }
+
+      entrarAlApp(user.displayName || 'Usuario', user.email);
+      showToast('✅ Bienvenido ' + (user.displayName || '').split(' ')[0]);
+      return;
+    }
+  } catch(e) {
+    console.error('Error auth:', e);
+  }
     if (user) {
       currentUser = user;
       modoGoogle  = true;
