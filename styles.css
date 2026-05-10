@@ -28,7 +28,8 @@ body {
 }
 
 /* ===== SCREENS ===== */
-.screen { display: none; min-height: 100vh; padding-bottom: 90px; }
+.screen { display: none; min-height: 100vh; padding-bottom: 80px; }
+#screen-bienvenida { padding-bottom: 0 !important; }
 .screen.active { display: block; }
 
 /* ===== LOGIN ===== */
@@ -751,3 +752,12 @@ body {
 }
 .fab-option.ingreso .fab-option-icon { background: rgba(0,227,140,0.1); }
 .fab-option.gasto   .fab-option-icon { background: rgba(255,77,109,0.1); }
+
+#bottom-nav-global {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+}
