@@ -597,11 +597,15 @@ async function eliminarDeFirebase(coleccion, id) {
 
 // ===== GOOGLE AUTH =====
 async function handleGoogleLogin() {
-  showToast('⏳ Conectando con Google...');
+  showToast('⏳ Redirigiendo a Google...');
   try {
-    const { loginGoogle, obtenerColeccion, guardarDato } = await import('./firebase.js');
-    const user = await loginGoogle();
-    if (!user) { showToast('❌ Error al conectar con Google'); return; }
+    const { loginGoogle } = await import('./firebase.js');
+    await loginGoogle();
+  } catch(e) {
+    console.error(e);
+    showToast('❌ Error al conectar con Google');
+  }
+  }
 
     // Guardar datos del invitado antes de cambiar userId
     const gastosInvitado   = getData('gastos');
@@ -721,7 +725,8 @@ function logout() {
 }
 
 // ===== INIT =====
-document.addEventListener('DOMContentLoaded', () => {
+// ===== INIT =====
+document.addEventListener('DOMContentLoaded', async () => {
   const hoy     = new Date().toISOString().split('T')[0];
   const fechaEl = document.getElementById('gasto-fecha');
   if (fechaEl) fechaEl.value = hoy;
@@ -734,6 +739,33 @@ document.addEventListener('DOMContentLoaded', () => {
     modalEl.addEventListener('click', function(e) {
       if (e.target === this) cerrarModal();
     });
+  }
+
+  const nav = document.getElementById('bottom-nav-global');
+  if (nav) nav.style.display = 'none';
+
+  // Verificar si viene de redirect de Google
+  try {
+    const { checkRedirectResult, obtenerColeccion } = await import('./firebase.js');
+    const user = await checkRedirectResult();
+    if (user) {
+      currentUser = user;
+      modoGoogle  = true;
+      userId      = user.uid;
+      const [gastos, ingresos, servicios] = await Promise.all([
+        obtenerColeccion(user.uid, 'gastos'),
+        obtenerColeccion(user.uid, 'ingresos'),
+        obtenerColeccion(user.uid, 'servicios')
+      ]);
+      if (gastos.length)    setData('gastos', gastos);
+      if (ingresos.length)  setData('ingresos', ingresos);
+      if (servicios.length) setData('servicios', servicios);
+      entrarAlApp(user.displayName || 'Usuario', user.email);
+      showToast('✅ Bienvenido ' + (user.displayName || '').split(' ')[0]);
+      return;
+    }
+  } catch(e) {
+    console.error(e);
   }
 
   if ('serviceWorker' in navigator) {

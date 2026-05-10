@@ -1,6 +1,5 @@
-// ===== FIREBASE CONFIG =====
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
-import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-auth.js";
+import { getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-auth.js";
 import { getFirestore, doc, setDoc, getDoc, collection, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -13,37 +12,27 @@ const firebaseConfig = {
   measurementId: "G-XPY90GYMKQ"
 };
 
-const app  = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db   = getFirestore(app);
+const app     = initializeApp(firebaseConfig);
+const auth    = getAuth(app);
+const db      = getFirestore(app);
 const provider = new GoogleAuthProvider();
 
-// ===== AUTH =====
 export async function loginGoogle() {
   try {
-    const result = await signInWithPopup(auth, provider);
-    return result.user;
+    await signInWithRedirect(auth, provider);
+    return null;
   } catch(e) {
-    if (e.code === 'auth/popup-blocked' || e.code === 'auth/cancelled-popup-request') {
-      try {
-        await signInWithRedirect(auth, provider);
-        return null;
-      } catch(e2) {
-        console.error(e2);
-        return null;
-      }
-    }
     console.error(e);
     return null;
   }
 }
 
-export async function getRedirectResult() {
+export async function checkRedirectResult() {
   try {
-    const { getRedirectResult: grr } = await import("https://www.gstatic.com/firebasejs/12.12.1/firebase-auth.js");
-    const result = await grr(auth);
+    const result = await getRedirectResult(auth);
     return result ? result.user : null;
   } catch(e) {
+    console.error(e);
     return null;
   }
 }
@@ -56,7 +45,6 @@ export function onUserChange(callback) {
   onAuthStateChanged(auth, callback);
 }
 
-// ===== FIRESTORE HELPERS =====
 export async function guardarDato(userId, coleccion, id, data) {
   try {
     await setDoc(doc(db, 'usuarios', userId, coleccion, String(id)), data);
