@@ -1,11 +1,12 @@
 {
-"name": "Cashiro",
-"short_name": "Cashiro",
-  "description": "App personal para control de gastos",
-  "start_url": "/",
+  "name": "Cashiro",
+  "short_name": "Cashiro",
+  "description": "Control inteligente y simple de tu dinero",
+  "start_url": "/cashiro-app/",
+  "scope": "/cashiro-app/",
   "display": "standalone",
-  "background_color": "#0f0c29",
-  "theme_color": "#6c63ff",
+  "background_color": "#0B0F1A",
+  "theme_color": "#00E38C",
   "orientation": "portrait",
   "icons": [
     {
