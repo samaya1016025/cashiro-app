@@ -1,19 +1,20 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
-import { 
-  getAuth, 
-  GoogleAuthProvider, 
-  signInWithRedirect, 
+import {
+  getAuth,
+  GoogleAuthProvider,
+  signInWithPopup,
+  signInWithRedirect,
   getRedirectResult,
-  signOut, 
-  onAuthStateChanged 
+  signOut,
+  onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-auth.js";
-import { 
-  getFirestore, 
-  doc, 
-  setDoc, 
-  collection, 
-  getDocs, 
-  deleteDoc 
+import {
+  getFirestore,
+  doc,
+  setDoc,
+  collection,
+  getDocs,
+  deleteDoc
 } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -28,31 +29,41 @@ const firebaseConfig = {
 
 const app      = initializeApp(firebaseConfig);
 const auth     = getAuth(app);
-auth.useDeviceLanguage();
 const db       = getFirestore(app);
 const provider = new GoogleAuthProvider();
+auth.useDeviceLanguage();
 
 export async function loginGoogle() {
   try {
-    await signInWithRedirect(auth, provider);
+    const result = await signInWithPopup(auth, provider);
+    return result.user;
   } catch(e) {
-    console.error('loginGoogle error:', e);
+    if (
+      e.code === 'auth/popup-blocked' ||
+      e.code === 'auth/cancelled-popup-request' ||
+      e.code === 'auth/popup-closed-by-user'
+    ) {
+      try {
+        await signInWithRedirect(auth, provider);
+        return null;
+      } catch(e2) {
+        console.error('Redirect error:', e2);
+        return null;
+      }
+    }
+    console.error('Popup error:', e);
+    return null;
   }
 }
 
 export async function checkRedirectResult() {
   try {
     const result = await getRedirectResult(auth);
-    if (result && result.user) return result.user;
-    return null;
+    return result ? result.user : null;
   } catch(e) {
     console.error('checkRedirectResult error:', e);
     return null;
   }
-}
-
-export function onUserChange(callback) {
-  onAuthStateChanged(auth, callback);
 }
 
 export async function getCurrentUser() {
