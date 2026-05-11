@@ -119,6 +119,7 @@ function logout() {
   if (nav) nav.style.display = 'none';
   ocultarTodosScreens();
   document.getElementById('screen-bienvenida').classList.add('active');
+  document.getElementById('screen-bienvenida').style.display = 'block';
 }
 
 // ===== INGRESO MENSUAL =====
@@ -281,7 +282,7 @@ function guardarServicio() {
   const monto  = parseFloat(document.getElementById('srv-monto').value);
   const dia    = parseInt(document.getElementById('srv-dia').value);
   if (!nombre)                     { showToast('⚠️ Escribe el nombre'); return; }
-  if (!monto || monto <= 0)        { showToast('⚠️ Monto inválido'); return; }
+  if (!modoGoogle || monto <= 0)   { showToast('⚠️ Monto inválido'); return; }
   if (!dia || dia < 1 || dia > 31) { showToast('⚠️ Día inválido (1-31)'); return; }
   const servicios = getData('servicios');
   const nuevo = { id: Date.now(), nombre, monto, dia };
@@ -449,7 +450,6 @@ function renderHistorial() {
   const mesesOrdenados = [...mesesSet]
     .map(k => { const [a, m] = k.split('-'); return { anio: +a, mes: +m }; })
     .sort((a, b) => b.anio - a.anio || b.mes - a.mes);
-
   let html = '';
   mesesOrdenados.forEach(({ mes, anio }, i) => {
     const del_mes = obtenerGastosDeMes(gastos, mes, anio)
@@ -552,7 +552,6 @@ function renderGraficas() {
           ${l}: $${formatNum(dataBar[i])}
         </div>`).join('')}
     </div>`;
-
   const porCat = {};
   obtenerGastosDeMes(gastos, hoy.getMonth(), hoy.getFullYear())
     .forEach(g => { porCat[g.cat] = (porCat[g.cat] || 0) + g.monto; });
@@ -652,46 +651,28 @@ document.addEventListener('DOMContentLoaded', async () => {
   const fabMenu = document.getElementById('fab-menu');
   if (fabMenu) fabMenu.style.display = 'none';
 
-// Verificar sesión activa o redirect de Google
+  // Verificar sesión activa o redirect de Google
   try {
     const { checkRedirectResult, getCurrentUser, obtenerColeccion } = await import('./firebase.js');
-
-    // Primero intentar redirect result
+    console.log('Verificando auth...');
     let user = await checkRedirectResult();
-
-    // Si no hay redirect, verificar si ya hay sesión activa
-    if (!user) user = await getCurrentUser();
-
+    console.log('Redirect result:', user ? user.email : 'null');
+    if (!user) {
+      user = await getCurrentUser();
+      console.log('Sesion activa:', user ? user.email : 'null');
+    }
     if (user) {
       currentUser = user;
       modoGoogle  = true;
       userId      = user.uid;
-
-      const gastosInvitado    = getData('gastos');
-      const ingresosInvitado  = getData('ingresos');
-      const serviciosInvitado = getData('servicios');
-      const hayLocales = gastosInvitado.length || ingresosInvitado.length || serviciosInvitado.length;
-
       const [gastosNube, ingresosNube, serviciosNube] = await Promise.all([
         obtenerColeccion(user.uid, 'gastos'),
         obtenerColeccion(user.uid, 'ingresos'),
         obtenerColeccion(user.uid, 'servicios')
       ]);
-      const hayNube = gastosNube.length || ingresosNube.length || serviciosNube.length;
-
-      if (hayLocales && !hayNube) {
-        const { guardarDato } = await import('./firebase.js');
-        const promesas = [];
-        gastosInvitado.forEach(g    => promesas.push(guardarDato(user.uid, 'gastos',    g.id,                 g)));
-        ingresosInvitado.forEach(i  => promesas.push(guardarDato(user.uid, 'ingresos',  `${i.mes}_${i.anio}`, i)));
-        serviciosInvitado.forEach(s => promesas.push(guardarDato(user.uid, 'servicios', s.id,                 s)));
-        await Promise.all(promesas);
-      } else if (hayNube) {
-        setData('gastos',    gastosNube);
-        setData('ingresos',  ingresosNube);
-        setData('servicios', serviciosNube);
-      }
-
+      if (gastosNube.length)    setData('gastos',    gastosNube);
+      if (ingresosNube.length)  setData('ingresos',  ingresosNube);
+      if (serviciosNube.length) setData('servicios', serviciosNube);
       entrarAlApp(user.displayName || 'Usuario', user.email);
       showToast('✅ Bienvenido ' + (user.displayName || '').split(' ')[0]);
       return;
@@ -699,42 +680,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   } catch(e) {
     console.error('Error auth:', e);
   }
-    if (user) {
-      currentUser = user;
-      modoGoogle  = true;
-      userId      = user.uid;
-      const gastosInvitado    = getData('gastos');
-      const ingresosInvitado  = getData('ingresos');
-      const serviciosInvitado = getData('servicios');
-      const hayLocales = gastosInvitado.length || ingresosInvitado.length || serviciosInvitado.length;
-      const [gastosNube, ingresosNube, serviciosNube] = await Promise.all([
-        obtenerColeccion(user.uid, 'gastos'),
-        obtenerColeccion(user.uid, 'ingresos'),
-        obtenerColeccion(user.uid, 'servicios')
-      ]);
-      const hayNube = gastosNube.length || ingresosNube.length || serviciosNube.length;
-      if (hayLocales && !hayNube) {
-        const { guardarDato } = await import('./firebase.js');
-        const promesas = [];
-        gastosInvitado.forEach(g   => promesas.push(guardarDato(user.uid, 'gastos',    g.id,              g)));
-        ingresosInvitado.forEach(i => promesas.push(guardarDato(user.uid, 'ingresos',  `${i.mes}_${i.anio}`, i)));
-        serviciosInvitado.forEach(s=> promesas.push(guardarDato(user.uid, 'servicios', s.id,              s)));
-        await Promise.all(promesas);
-      } else if (hayNube) {
-        setData('gastos',    gastosNube);
-        setData('ingresos',  ingresosNube);
-        setData('servicios', serviciosNube);
-      }
-      entrarAlApp(user.displayName || 'Usuario', user.email);
-      showToast('✅ Bienvenido ' + (user.displayName || '').split(' ')[0]);
-      return;
-    }
-  } catch(e) {
-    console.error('Error redirect:', e);
-  }
 
-  // Mostrar pantalla de bienvenida
+  // Sin sesión — mostrar bienvenida
+  ocultarTodosScreens();
   document.getElementById('screen-bienvenida').classList.add('active');
+  document.getElementById('screen-bienvenida').style.display = 'block';
 
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/sw.js').catch(() => {});
