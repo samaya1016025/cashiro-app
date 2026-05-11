@@ -75,6 +75,7 @@ function showToast(msg) {
 
 // ===== ENTRADA =====
 function entrarAlApp(nombre, detalle) {
+  ocultarTodosScreens();
   const nav = document.getElementById('bottom-nav-global');
   if (nav) nav.style.display = 'flex';
   showScreen('screen-dashboard');
@@ -91,6 +92,8 @@ function entrarAlApp(nombre, detalle) {
   if (btnGoogle) btnGoogle.style.display = esInvitado  ? 'block' : 'none';
   if (btnSalir)  btnSalir.style.display  = !esInvitado ? 'block' : 'none';
   if (cardPass)  cardPass.style.display  = !esInvitado ? 'block' : 'none';
+
+  window.scrollTo(0, 0);
 }
 
 function entrarComoInvitado() {
