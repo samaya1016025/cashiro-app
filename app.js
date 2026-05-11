@@ -109,9 +109,7 @@ function generarDeviceId() {
 }
 
 function logout() {
-  if (modoGoogle && currentUser) {
-    import('./firebase.js').then(({ logoutGoogle }) => logoutGoogle());
-  }
+  if (modoGoogle && currentUser) logoutGoogle();
   currentUser = null;
   modoGoogle  = false;
   userId      = 'local';
@@ -587,7 +585,6 @@ function renderGraficas() {
 async function guardarEnFirebase(coleccion, id, data) {
   if (!modoGoogle || !currentUser) return;
   try {
-    const { guardarDato } = await import('./firebase.js');
     await guardarDato(currentUser.uid, coleccion, id, data);
   } catch(e) { console.error(e); }
 }
@@ -595,17 +592,32 @@ async function guardarEnFirebase(coleccion, id, data) {
 async function eliminarDeFirebase(coleccion, id) {
   if (!modoGoogle || !currentUser) return;
   try {
-    const { eliminarDato } = await import('./firebase.js');
     await eliminarDato(currentUser.uid, coleccion, id);
   } catch(e) { console.error(e); }
 }
 
 // ===== GOOGLE AUTH =====
 async function handleGoogleLogin() {
-  showToast('⏳ Redirigiendo a Google...');
+  showToast('⏳ Conectando con Google...');
   try {
-    const { loginGoogle } = await import('./firebase.js');
-    await loginGoogle();
+    const user = await loginGoogle();
+    if (user) {
+      currentUser = user;
+      modoGoogle  = true;
+      userId      = user.uid;
+      const [gastosNube, ingresosNube, serviciosNube] = await Promise.all([
+        obtenerColeccion(user.uid, 'gastos'),
+        obtenerColeccion(user.uid, 'ingresos'),
+        obtenerColeccion(user.uid, 'servicios')
+      ]);
+      if (gastosNube.length)    setData('gastos',    gastosNube);
+      if (ingresosNube.length)  setData('ingresos',  ingresosNube);
+      if (serviciosNube.length) setData('servicios', serviciosNube);
+      entrarAlApp(user.displayName || 'Usuario', user.email);
+      showToast('✅ Bienvenido ' + (user.displayName || '').split(' ')[0]);
+    } else {
+      showToast('❌ Error al conectar con Google');
+    }
   } catch(e) {
     console.error(e);
     showToast('❌ Error al conectar con Google');
@@ -630,6 +642,7 @@ function formatFecha(str) {
 }
 
 // ===== INIT =====
+// ===== INIT =====
 document.addEventListener('DOMContentLoaded', async () => {
   const hoy     = new Date().toISOString().split('T')[0];
   const fechaEl = document.getElementById('gasto-fecha');
@@ -651,16 +664,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   const fabMenu = document.getElementById('fab-menu');
   if (fabMenu) fabMenu.style.display = 'none';
 
-  // Verificar sesión activa o redirect de Google
+  // Verificar sesión activa
   try {
-    const { checkRedirectResult, getCurrentUser, obtenerColeccion } = await import('./firebase.js');
-    console.log('Verificando auth...');
-    let user = await checkRedirectResult();
-    console.log('Redirect result:', user ? user.email : 'null');
-    if (!user) {
-      user = await getCurrentUser();
-      console.log('Sesion activa:', user ? user.email : 'null');
-    }
+    const user = await getCurrentUser();
+    console.log('Sesion activa:', user ? user.email : 'null');
     if (user) {
       currentUser = user;
       modoGoogle  = true;
@@ -687,6 +694,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('screen-bienvenida').style.display = 'block';
 
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js').catch(() => {});
+    navigator.serviceWorker.register('/cashiro-app/sw.js').catch(() => {});
   }
 });

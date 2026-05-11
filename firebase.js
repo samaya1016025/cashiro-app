@@ -1,87 +1,45 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
-import {
-  getAuth,
-  GoogleAuthProvider,
-  signInWithPopup,
-  signInWithRedirect,
-  getRedirectResult,
-  signOut,
-  onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/12.12.1/firebase-auth.js";
-import {
-  getFirestore,
-  doc,
-  setDoc,
-  collection,
-  getDocs,
-  deleteDoc
-} from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
-
 const firebaseConfig = {
   apiKey: "AIzaSyDZBOgd5K1HGdl-r3EZpyp6PRZ33qIn9Cc",
   authDomain: "cashiro-app.firebaseapp.com",
   projectId: "cashiro-app",
   storageBucket: "cashiro-app.firebasestorage.app",
   messagingSenderId: "102189360578",
-  appId: "1:102189360578:web:1776dfd22fa82ca2ac225b",
-  measurementId: "G-XPY90GYMKQ"
+  appId: "1:102189360578:web:1776dfd22fa82ca2ac225b"
 };
 
-const app      = initializeApp(firebaseConfig);
-const auth     = getAuth(app);
-const db       = getFirestore(app);
-const provider = new GoogleAuthProvider();
-auth.useDeviceLanguage();
+firebase.initializeApp(firebaseConfig);
+const auth     = firebase.auth();
+const db       = firebase.firestore();
+const provider = new firebase.auth.GoogleAuthProvider();
+provider.setCustomParameters({ prompt: 'select_account' });
 
-export async function loginGoogle() {
+async function loginGoogle() {
   try {
-    const result = await signInWithPopup(auth, provider);
+    const result = await auth.signInWithPopup(provider);
     return result.user;
   } catch(e) {
-    if (
-      e.code === 'auth/popup-blocked' ||
-      e.code === 'auth/cancelled-popup-request' ||
-      e.code === 'auth/popup-closed-by-user'
-    ) {
-      try {
-        await signInWithRedirect(auth, provider);
-        return null;
-      } catch(e2) {
-        console.error('Redirect error:', e2);
-        return null;
-      }
-    }
-    console.error('Popup error:', e);
+    console.error('loginGoogle error:', e.code, e.message);
     return null;
   }
 }
 
-export async function checkRedirectResult() {
-  try {
-    const result = await getRedirectResult(auth);
-    return result ? result.user : null;
-  } catch(e) {
-    console.error('checkRedirectResult error:', e);
-    return null;
-  }
+async function logoutGoogle() {
+  await auth.signOut();
 }
 
-export async function getCurrentUser() {
+function getCurrentUser() {
   return new Promise((resolve) => {
-    const unsub = onAuthStateChanged(auth, user => {
+    const unsub = auth.onAuthStateChanged(user => {
       unsub();
       resolve(user);
     });
   });
 }
 
-export async function logoutGoogle() {
-  await signOut(auth);
-}
-
-export async function guardarDato(userId, coleccion, id, data) {
+async function guardarDato(userId, coleccion, id, data) {
   try {
-    await setDoc(doc(db, 'usuarios', userId, coleccion, String(id)), data);
+    await db.collection('usuarios').doc(userId)
+      .collection(coleccion).doc(String(id)).set(data);
     return true;
   } catch(e) {
     console.error(e);
@@ -89,9 +47,10 @@ export async function guardarDato(userId, coleccion, id, data) {
   }
 }
 
-export async function obtenerColeccion(userId, coleccion) {
+async function obtenerColeccion(userId, coleccion) {
   try {
-    const snap = await getDocs(collection(db, 'usuarios', userId, coleccion));
+    const snap = await db.collection('usuarios').doc(userId)
+      .collection(coleccion).get();
     return snap.docs.map(d => d.data());
   } catch(e) {
     console.error(e);
@@ -99,14 +58,13 @@ export async function obtenerColeccion(userId, coleccion) {
   }
 }
 
-export async function eliminarDato(userId, coleccion, id) {
+async function eliminarDato(userId, coleccion, id) {
   try {
-    await deleteDoc(doc(db, 'usuarios', userId, coleccion, String(id)));
+    await db.collection('usuarios').doc(userId)
+      .collection(coleccion).doc(String(id)).delete();
     return true;
   } catch(e) {
     console.error(e);
     return false;
   }
 }
-
-export { auth, db };

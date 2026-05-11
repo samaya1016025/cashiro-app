@@ -146,8 +146,7 @@
     <div id="lista-gastos-recientes" class="gastos-list"></div>
 
       </button>
-      <button class="nav-btn" onclick="navTo('screen-servicios', this)">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
           <rect x="3" y="5" width="18" height="16" rx="2.5" stroke="currentColor" stroke-width="2"/>
           <line x1="8" y1="3" x2="8" y2="7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
           <line x1="16" y1="3" x2="16" y2="7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
@@ -524,8 +523,11 @@
     </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script type="module" src="firebase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="firebase.js"></script>
   <script src="app.js"></script>
   <!-- ===== FAB MENU ===== -->
   <div id="fab-menu" class="fab-menu" style="display:none">
