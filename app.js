@@ -605,14 +605,31 @@ async function handleGoogleLogin() {
       currentUser = user;
       modoGoogle  = true;
       userId      = user.uid;
+
+      const gastosInvitado    = getData('gastos');
+      const ingresosInvitado  = getData('ingresos');
+      const serviciosInvitado = getData('servicios');
+      const hayLocales = gastosInvitado.length || ingresosInvitado.length || serviciosInvitado.length;
+
       const [gastosNube, ingresosNube, serviciosNube] = await Promise.all([
         obtenerColeccion(user.uid, 'gastos'),
         obtenerColeccion(user.uid, 'ingresos'),
         obtenerColeccion(user.uid, 'servicios')
       ]);
-      if (gastosNube.length)    setData('gastos',    gastosNube);
-      if (ingresosNube.length)  setData('ingresos',  ingresosNube);
-      if (serviciosNube.length) setData('servicios', serviciosNube);
+      const hayNube = gastosNube.length || ingresosNube.length || serviciosNube.length;
+
+      if (hayLocales && !hayNube) {
+        const promesas = [];
+        gastosInvitado.forEach(g    => promesas.push(guardarDato(user.uid, 'gastos',    g.id,                 g)));
+        ingresosInvitado.forEach(i  => promesas.push(guardarDato(user.uid, 'ingresos',  `${i.mes}_${i.anio}`, i)));
+        serviciosInvitado.forEach(s => promesas.push(guardarDato(user.uid, 'servicios', s.id,                 s)));
+        await Promise.all(promesas);
+      } else if (hayNube) {
+        setData('gastos',    gastosNube);
+        setData('ingresos',  ingresosNube);
+        setData('servicios', serviciosNube);
+      }
+
       entrarAlApp(user.displayName || 'Usuario', user.email);
       showToast('✅ Bienvenido ' + (user.displayName || '').split(' ')[0]);
     } else {
