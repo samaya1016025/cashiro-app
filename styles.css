@@ -419,7 +419,7 @@ body {
   display: flex;
   justify-content: space-around;
   align-items: center;
-  padding: 10px 0 24px;
+  padding: 8px 0 8px;
   z-index: 100;
 }
 .nav-btn {
