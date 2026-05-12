@@ -28,7 +28,7 @@ body {
 }
 
 /* ===== SCREENS ===== */
-.screen { display: none; min-height: 100vh; padding-bottom: 80px; }
+.screen { display: none; min-height: 100vh; padding-bottom: 65px; }
 #screen-bienvenida { padding-bottom: 0 !important; }
 .screen.active { display: block; }
 
@@ -419,7 +419,7 @@ body {
   display: flex;
   justify-content: space-around;
   align-items: center;
-  padding: 8px 0 8px;
+  padding: 6px 0 6px;
   z-index: 100;
 }
 .nav-btn {
