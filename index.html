@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Cashiro" />
@@ -12,8 +13,8 @@
 </head>
 <body>
 
-  <!-- ===== BIENVENIDA ===== -->
-  <div id="screen-bienvenida" class="screen active">
+  <!-- BIENVENIDA -->
+  <div id="screen-bienvenida" class="screen">
     <div class="login-container">
       <div class="login-logo">
         <svg width="88" height="88" viewBox="0 0 72 72" fill="none">
@@ -25,50 +26,24 @@
       </div>
       <h1 class="login-title">Cashiro</h1>
       <p class="login-subtitle">Control inteligente y simple de tu dinero</p>
-
       <div class="bienvenida-features">
         <div class="feature-item">
-          <!-- icono grafica -->
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" class="feature-svg">
-            <rect x="3" y="12" width="4" height="9" rx="1.5" fill="url(#f1)"/>
-            <rect x="10" y="7" width="4" height="14" rx="1.5" fill="url(#f1)"/>
-            <rect x="17" y="3" width="4" height="18" rx="1.5" fill="url(#f1)"/>
-            <defs><linearGradient id="f1" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#00E38C"/><stop offset="1" stop-color="#3A86FF"/></linearGradient></defs>
-          </svg>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" class="feature-svg"><rect x="3" y="12" width="4" height="9" rx="1.5" fill="url(#f1)"/><rect x="10" y="7" width="4" height="14" rx="1.5" fill="url(#f1)"/><rect x="17" y="3" width="4" height="18" rx="1.5" fill="url(#f1)"/><defs><linearGradient id="f1" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#00E38C"/><stop offset="1" stop-color="#3A86FF"/></linearGradient></defs></svg>
           <span>Controla tus gastos e ingresos</span>
         </div>
         <div class="feature-item">
-          <!-- icono fijo/ciclo -->
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" class="feature-svg">
-            <path d="M4 12C4 7.6 7.6 4 12 4C14.5 4 16.8 5.1 18.4 6.8L21 4v6h-6l2.3-2.3C16.1 6.6 14.1 6 12 6 8.7 6 6 8.7 6 12" stroke="#00E38C" stroke-width="1.8" stroke-linecap="round"/>
-            <path d="M20 12C20 16.4 16.4 20 12 20C9.5 20 7.2 18.9 5.6 17.2L3 20v-6h6l-2.3 2.3C7.9 17.4 9.9 18 12 18C15.3 18 18 15.3 18 12" stroke="#3A86FF" stroke-width="1.8" stroke-linecap="round"/>
-          </svg>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" class="feature-svg"><path d="M4 12C4 7.6 7.6 4 12 4C14.5 4 16.8 5.1 18.4 6.8L21 4v6h-6l2.3-2.3C16.1 6.6 14.1 6 12 6 8.7 6 6 8.7 6 12" stroke="#00E38C" stroke-width="1.8" stroke-linecap="round"/><path d="M20 12C20 16.4 16.4 20 12 20C9.5 20 7.2 18.9 5.6 17.2L3 20v-6h6l-2.3 2.3C7.9 17.4 9.9 18 12 18C15.3 18 18 15.3 18 12" stroke="#3A86FF" stroke-width="1.8" stroke-linecap="round"/></svg>
           <span>Gastos fijos automáticos</span>
         </div>
         <div class="feature-item">
-          <!-- icono calendario alerta -->
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" class="feature-svg">
-            <rect x="3" y="5" width="18" height="16" rx="2.5" stroke="#FFC857" stroke-width="1.8"/>
-            <line x1="8" y1="3" x2="8" y2="7" stroke="#FFC857" stroke-width="1.8" stroke-linecap="round"/>
-            <line x1="16" y1="3" x2="16" y2="7" stroke="#FFC857" stroke-width="1.8" stroke-linecap="round"/>
-            <line x1="3" y1="10" x2="21" y2="10" stroke="#FFC857" stroke-width="1.5"/>
-            <line x1="12" y1="13" x2="12" y2="16" stroke="#FFC857" stroke-width="2" stroke-linecap="round"/>
-            <circle cx="12" cy="18" r="1" fill="#FFC857"/>
-          </svg>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" class="feature-svg"><rect x="3" y="5" width="18" height="16" rx="2.5" stroke="#FFC857" stroke-width="1.8"/><line x1="8" y1="3" x2="8" y2="7" stroke="#FFC857" stroke-width="1.8" stroke-linecap="round"/><line x1="16" y1="3" x2="16" y2="7" stroke="#FFC857" stroke-width="1.8" stroke-linecap="round"/><line x1="3" y1="10" x2="21" y2="10" stroke="#FFC857" stroke-width="1.5"/><line x1="12" y1="13" x2="12" y2="16" stroke="#FFC857" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="18" r="1" fill="#FFC857"/></svg>
           <span>Alertas de vencimientos</span>
         </div>
         <div class="feature-item">
-          <!-- icono nube -->
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" class="feature-svg">
-            <path d="M6.5 19C4 19 2 17 2 14.5C2 12.3 3.5 10.4 5.6 10C6.1 7.2 8.6 5 11.5 5C14.1 5 16.3 6.6 17.2 9C19.3 9.3 21 11.1 21 13.5C21 16 19 18 16.5 18" stroke="url(#fc)" stroke-width="1.8" stroke-linecap="round"/>
-            <polyline points="9,16 12,13 15,16" stroke="url(#fc)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-            <line x1="12" y1="13" x2="12" y2="20" stroke="url(#fc)" stroke-width="1.8" stroke-linecap="round"/>
-            <defs><linearGradient id="fc" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#00E38C"/><stop offset="1" stop-color="#3A86FF"/></linearGradient></defs>
-          </svg>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" class="feature-svg"><path d="M6.5 19C4 19 2 17 2 14.5C2 12.3 3.5 10.4 5.6 10C6.1 7.2 8.6 5 11.5 5C14.1 5 16.3 6.6 17.2 9C19.3 9.3 21 11.1 21 13.5C21 16 19 18 16.5 18" stroke="url(#fc)" stroke-width="1.8" stroke-linecap="round"/><polyline points="9,16 12,13 15,16" stroke="url(#fc)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><line x1="12" y1="13" x2="12" y2="20" stroke="url(#fc)" stroke-width="1.8" stroke-linecap="round"/><defs><linearGradient id="fc" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#00E38C"/><stop offset="1" stop-color="#3A86FF"/></linearGradient></defs></svg>
           <span>Respaldo en la nube con Google</span>
         </div>
       </div>
-
       <div style="display:flex;flex-direction:column;gap:12px;margin-top:8px">
         <button class="btn-google" onclick="handleGoogleLogin()">
           <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.2l6.7-6.7C35.7 2.5 30.2 0 24 0 14.7 0 6.7 5.5 2.8 13.5l7.8 6C12.5 13 17.8 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v8.5h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4 7.1-10 7.1-17z"/><path fill="#FBBC05" d="M10.6 28.5c-.5-1.5-.8-3-.8-4.5s.3-3 .8-4.5l-7.8-6C1 16.5 0 20.1 0 24s1 7.5 2.8 10.5l7.8-6z"/><path fill="#34A853" d="M24 48c6.2 0 11.4-2 15.2-5.5l-7.5-5.8c-2 1.4-4.6 2.2-7.7 2.2-6.2 0-11.5-4.2-13.4-9.9l-7.8 6C6.7 42.5 14.7 48 24 48z"/></svg>
@@ -82,116 +57,47 @@
     </div>
   </div>
 
-  <!-- ===== DASHBOARD ===== -->
+  <!-- DASHBOARD -->
   <div id="screen-dashboard" class="screen">
     <div class="topbar">
       <div class="topbar-brand">
-        <svg width="30" height="30" viewBox="0 0 72 72" fill="none">
-          <rect width="72" height="72" rx="18" fill="#0B0F1A"/>
-          <path d="M44 26C41.5 23.5 38 22 34 22C26.3 22 20 28.3 20 36C20 43.7 26.3 50 34 50C38 50 41.5 48.5 44 46" stroke="url(#gt)" stroke-width="3.5" stroke-linecap="round"/>
-          <polyline points="26,36 31,31 36,38 41,28 46,34 51,30" stroke="url(#gt)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-          <defs><linearGradient id="gt" x1="20" y1="36" x2="52" y2="36" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#00E38C"/><stop offset="100%" stop-color="#3A86FF"/></linearGradient></defs>
-        </svg>
-        <div>
-          <span class="topbar-title">Cashiro</span>
-          <span class="topbar-sub">Tu dinero bajo control</span>
-        </div>
+        <svg width="30" height="30" viewBox="0 0 72 72" fill="none"><rect width="72" height="72" rx="18" fill="#0B0F1A"/><path d="M44 26C41.5 23.5 38 22 34 22C26.3 22 20 28.3 20 36C20 43.7 26.3 50 34 50C38 50 41.5 48.5 44 46" stroke="url(#gt)" stroke-width="3.5" stroke-linecap="round"/><polyline points="26,36 31,31 36,38 41,28 46,34 51,30" stroke="url(#gt)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/><defs><linearGradient id="gt" x1="20" y1="36" x2="52" y2="36" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#00E38C"/><stop offset="100%" stop-color="#3A86FF"/></linearGradient></defs></svg>
+        <div><span class="topbar-title">Cashiro</span><span class="topbar-sub">Tu dinero bajo control</span></div>
       </div>
       <button class="btn-logout" onclick="logout()">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-          <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" stroke="#FF4D6D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" stroke="#FF4D6D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         Salir
       </button>
     </div>
-
     <div class="balance-card">
-      <p class="balance-label">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style="vertical-align:middle;margin-right:4px">
-          <rect x="2" y="7" width="20" height="14" rx="2.5" stroke="#00E38C" stroke-width="1.8"/>
-          <path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2" stroke="#00E38C" stroke-width="1.8"/>
-          <circle cx="12" cy="14" r="2" fill="#00E38C"/>
-        </svg>
-        Saldo disponible
-      </p>
+      <p class="balance-label">💰 Saldo disponible</p>
       <h2 class="balance-amount" id="saldo-display">$0</h2>
       <p class="balance-sub" id="mes-display">—</p>
       <div class="balance-bar-wrap">
-        <div class="balance-bar-track">
-          <div class="balance-bar-fill" id="balance-bar"></div>
-        </div>
+        <div class="balance-bar-track"><div class="balance-bar-fill" id="balance-bar"></div></div>
         <span class="balance-bar-label" id="balance-bar-pct">0% gastado</span>
       </div>
     </div>
-
-    <div class="section-title">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" style="vertical-align:middle;margin-right:6px">
-        <rect x="3" y="5" width="18" height="16" rx="2.5" stroke="#FFC857" stroke-width="1.8"/>
-        <line x1="8" y1="3" x2="8" y2="7" stroke="#FFC857" stroke-width="1.8" stroke-linecap="round"/>
-        <line x1="16" y1="3" x2="16" y2="7" stroke="#FFC857" stroke-width="1.8" stroke-linecap="round"/>
-        <line x1="3" y1="10" x2="21" y2="10" stroke="#FFC857" stroke-width="1.5"/>
-        <line x1="12" y1="13" x2="12" y2="16" stroke="#FFC857" stroke-width="2" stroke-linecap="round"/>
-        <circle cx="12" cy="18" r="1" fill="#FFC857"/>
-      </svg>
-      Próximos vencimientos
-    </div>
+    <div class="section-title">📅 Próximos vencimientos</div>
     <div id="lista-vencimientos" class="vencimientos-list"></div>
-
-    <div class="section-title">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" style="vertical-align:middle;margin-right:6px">
-        <polyline points="22,12 18,12 15,21 9,3 6,12 2,12" stroke="#3A86FF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-      Últimos movimientos
-    </div>
+    <div class="section-title">🔄 Últimos movimientos</div>
     <div id="lista-gastos-recientes" class="gastos-list"></div>
+  </div>
 
-  <!-- ===== INGRESO MENSUAL ===== -->
+  <!-- INGRESO -->
   <div id="screen-ingreso" class="screen">
-<div class="topbar">
-      <span class="topbar-title">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="vertical-align:middle;margin-right:4px">
-          <circle cx="12" cy="12" r="9" stroke="#00E38C" stroke-width="1.8"/>
-          <line x1="12" y1="8" x2="12" y2="16" stroke="#00E38C" stroke-width="2" stroke-linecap="round"/>
-          <line x1="8" y1="12" x2="16" y2="12" stroke="#00E38C" stroke-width="2" stroke-linecap="round"/>
-        </svg>
-        Ingreso del Mes
-      </span>
-    </div>
+    <div class="topbar"><span class="topbar-title">➕ Ingreso del Mes</span></div>
     <div class="form-container">
-      <div class="form-group">
-        <label>Mes</label>
-        <select id="ingreso-mes"></select>
-      </div>
-      <div class="form-group">
-        <label>Año</label>
-        <input type="number" id="ingreso-anio" value="2026" />
-      </div>
-      <div class="form-group">
-        <label>Monto del ingreso ($)</label>
-        <input type="number" id="ingreso-monto" placeholder="Ej: 3000000" />
-      </div>
-      <button class="btn-primary" onclick="guardarIngreso()">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style="vertical-align:middle;margin-right:6px">
-          <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" stroke="#0B0F1A" stroke-width="2"/>
-          <polyline points="17,21 17,13 7,13 7,21" stroke="#0B0F1A" stroke-width="2"/>
-          <polyline points="7,3 7,8 15,8" stroke="#0B0F1A" stroke-width="2"/>
-        </svg>
-        Guardar ingreso
-      </button>
+      <div class="form-group"><label>Mes</label><select id="ingreso-mes"></select></div>
+      <div class="form-group"><label>Año</label><input type="number" id="ingreso-anio" value="2026" /></div>
+      <div class="form-group"><label>Monto ($)</label><input type="number" id="ingreso-monto" placeholder="Ej: 3000000" /></div>
+      <button class="btn-primary" onclick="guardarIngreso()">Guardar ingreso</button>
     </div>
   </div>
 
-  <!-- ===== AGREGAR GASTO ===== -->
+  <!-- GASTO -->
   <div id="screen-gasto" class="screen">
-<div class="topbar">
-      <span class="topbar-title">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="vertical-align:middle;margin-right:4px">
-          <circle cx="12" cy="12" r="9" stroke="#FF4D6D" stroke-width="1.8"/>
-          <line x1="8" y1="12" x2="16" y2="12" stroke="#FF4D6D" stroke-width="2" stroke-linecap="round"/>
-        </svg>
-        Agregar Gasto
-      </span>
-    </div>
+    <div class="topbar"><span class="topbar-title">➖ Agregar Gasto</span></div>
     <div class="form-container">
       <div class="form-group">
         <label>Categoría</label>
@@ -206,18 +112,9 @@
           <option value="Otro">📦 Otro</option>
         </select>
       </div>
-      <div class="form-group">
-        <label>Descripción</label>
-        <input type="text" id="gasto-desc" placeholder="Ej: Almuerzo, Metro, etc." />
-      </div>
-      <div class="form-group">
-        <label>Monto ($)</label>
-        <input type="number" id="gasto-monto" placeholder="Ej: 15000" />
-      </div>
-      <div class="form-group">
-        <label>Fecha</label>
-        <input type="date" id="gasto-fecha" />
-      </div>
+      <div class="form-group"><label>Descripción</label><input type="text" id="gasto-desc" placeholder="Ej: Almuerzo, Metro, etc." /></div>
+      <div class="form-group"><label>Monto ($)</label><input type="number" id="gasto-monto" placeholder="Ej: 15000" /></div>
+      <div class="form-group"><label>Fecha</label><input type="date" id="gasto-fecha" /></div>
       <div class="form-group">
         <label>Tipo de gasto</label>
         <select id="gasto-tipo" onchange="toggleFechaFin()">
@@ -228,97 +125,32 @@
       <div class="form-group" id="grupo-fecha-fin" style="display:none">
         <label>¿Hasta cuándo? (opcional)</label>
         <input type="month" id="gasto-fecha-fin" />
-        <small style="color:var(--text-muted);font-size:12px">Ej: préstamo que termina en diciembre</small>
+        <small style="color:var(--text-muted);font-size:12px">Dejar vacío si es indefinido</small>
       </div>
-      <button class="btn-primary" onclick="guardarGasto()">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style="vertical-align:middle;margin-right:6px">
-          <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" stroke="#0B0F1A" stroke-width="2"/>
-          <polyline points="17,21 17,13 7,13 7,21" stroke="#0B0F1A" stroke-width="2"/>
-          <polyline points="7,3 7,8 15,8" stroke="#0B0F1A" stroke-width="2"/>
-        </svg>
-        Guardar gasto
-      </button>
+      <button class="btn-primary" onclick="guardarGasto()">Guardar gasto</button>
     </div>
   </div>
 
-  <!-- ===== SERVICIOS ===== -->
+  <!-- SERVICIOS -->
   <div id="screen-servicios" class="screen">
-<div class="topbar">
-      <span class="topbar-title">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="vertical-align:middle;margin-right:4px">
-          <rect x="3" y="5" width="18" height="16" rx="2.5" stroke="#FFC857" stroke-width="1.8"/>
-          <line x1="8" y1="3" x2="8" y2="7" stroke="#FFC857" stroke-width="1.8" stroke-linecap="round"/>
-          <line x1="16" y1="3" x2="16" y2="7" stroke="#FFC857" stroke-width="1.8" stroke-linecap="round"/>
-          <line x1="3" y1="10" x2="21" y2="10" stroke="#FFC857" stroke-width="1.5"/>
-        </svg>
-        Servicios
-      </span>
-    </div>
+    <div class="topbar"><span class="topbar-title">🧾 Servicios</span></div>
     <div class="form-container">
-      <div class="form-group">
-        <label>Nombre del servicio</label>
-        <input type="text" id="srv-nombre" placeholder="Ej: Agua, Luz, Internet" />
-      </div>
-      <div class="form-group">
-        <label>Monto aproximado ($)</label>
-        <input type="number" id="srv-monto" placeholder="Ej: 80000" />
-      </div>
-      <div class="form-group">
-        <label>Día de vencimiento (cada mes)</label>
-        <input type="number" id="srv-dia" placeholder="Ej: 15" min="1" max="31" />
-      </div>
-      <button class="btn-primary" onclick="guardarServicio()">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style="vertical-align:middle;margin-right:6px">
-          <circle cx="12" cy="12" r="9" stroke="#0B0F1A" stroke-width="2"/>
-          <line x1="12" y1="8" x2="12" y2="16" stroke="#0B0F1A" stroke-width="2.5" stroke-linecap="round"/>
-          <line x1="8" y1="12" x2="16" y2="12" stroke="#0B0F1A" stroke-width="2.5" stroke-linecap="round"/>
-        </svg>
-        Agregar servicio
-      </button>
-      <div class="section-title" style="margin-top:24px">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" style="vertical-align:middle;margin-right:6px">
-          <rect x="3" y="5" width="18" height="16" rx="2.5" stroke="#FFC857" stroke-width="1.8"/>
-          <line x1="8" y1="3" x2="8" y2="7" stroke="#FFC857" stroke-width="1.8" stroke-linecap="round"/>
-          <line x1="16" y1="3" x2="16" y2="7" stroke="#FFC857" stroke-width="1.8" stroke-linecap="round"/>
-          <line x1="3" y1="10" x2="21" y2="10" stroke="#FFC857" stroke-width="1.5"/>
-        </svg>
-        Mis servicios
-      </div>
+      <div class="form-group"><label>Nombre del servicio</label><input type="text" id="srv-nombre" placeholder="Ej: Agua, Luz, Internet" /></div>
+      <div class="form-group"><label>Monto aproximado ($)</label><input type="number" id="srv-monto" placeholder="Ej: 80000" /></div>
+      <div class="form-group"><label>Día de vencimiento (cada mes)</label><input type="number" id="srv-dia" placeholder="Ej: 15" min="1" max="31" /></div>
+      <button class="btn-primary" onclick="guardarServicio()">Agregar servicio</button>
+      <div class="section-title" style="margin-top:24px">📋 Mis servicios</div>
       <div id="lista-servicios"></div>
     </div>
   </div>
 
-  <!-- ===== HISTORIAL ===== -->
+  <!-- HISTORIAL -->
   <div id="screen-historial" class="screen">
-<div class="topbar">
-      <span class="topbar-title">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="vertical-align:middle;margin-right:4px">
-          <polyline points="22,12 18,12 15,21 9,3 6,12 2,12" stroke="#3A86FF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        Movimientos
-      </span>
-    </div>
+    <div class="topbar"><span class="topbar-title">📊 Movimientos</span></div>
     <div class="historial-container">
       <div class="tabs-container">
-        <button class="tab-btn active" onclick="switchTab('tab-grafica')">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" style="vertical-align:middle;margin-right:4px">
-            <rect x="3" y="12" width="4" height="9" rx="1" stroke="currentColor" stroke-width="1.8"/>
-            <rect x="10" y="7" width="4" height="14" rx="1" stroke="currentColor" stroke-width="1.8"/>
-            <rect x="17" y="3" width="4" height="18" rx="1" stroke="currentColor" stroke-width="1.8"/>
-          </svg>
-          Gráfica
-        </button>
-        <button class="tab-btn" onclick="switchTab('tab-historial')">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" style="vertical-align:middle;margin-right:4px">
-            <line x1="8" y1="6" x2="21" y2="6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-            <line x1="8" y1="12" x2="21" y2="12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-            <line x1="8" y1="18" x2="21" y2="18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-            <circle cx="3.5" cy="6" r="1.5" fill="currentColor"/>
-            <circle cx="3.5" cy="12" r="1.5" fill="currentColor"/>
-            <circle cx="3.5" cy="18" r="1.5" fill="currentColor"/>
-          </svg>
-          Historial
-        </button>
+        <button class="tab-btn active" onclick="switchTab('tab-grafica')">📊 Gráfica</button>
+        <button class="tab-btn" onclick="switchTab('tab-historial')">📋 Historial</button>
       </div>
       <div id="tab-grafica">
         <div class="chart-card">
@@ -338,71 +170,35 @@
     </div>
   </div>
 
-  <!-- ===== PERFIL ===== -->
+  <!-- PERFIL -->
   <div id="screen-perfil" class="screen">
-<div class="topbar">
-      <span class="topbar-title">Mi Perfil</span>
-    </div>
+    <div class="topbar"><span class="topbar-title">👤 Mi Perfil</span></div>
     <div class="form-container">
       <div class="perfil-avatar">
         <div class="perfil-avatar-circle">
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
-            <circle cx="12" cy="8" r="4" stroke="url(#gp)" stroke-width="1.8"/>
-            <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="url(#gp)" stroke-width="1.8" stroke-linecap="round"/>
-            <defs><linearGradient id="gp" x1="4" y1="12" x2="20" y2="12" gradientUnits="userSpaceOnUse"><stop stop-color="#00E38C"/><stop offset="1" stop-color="#3A86FF"/></linearGradient></defs>
-          </svg>
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="url(#gp)" stroke-width="1.8"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="url(#gp)" stroke-width="1.8" stroke-linecap="round"/><defs><linearGradient id="gp" x1="4" y1="12" x2="20" y2="12" gradientUnits="userSpaceOnUse"><stop stop-color="#00E38C"/><stop offset="1" stop-color="#3A86FF"/></linearGradient></defs></svg>
         </div>
         <p class="perfil-nombre">Invitado</p>
         <p class="perfil-plan">Sin cuenta</p>
       </div>
 
       <div class="perfil-card premium-card">
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-            <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" stroke="url(#gstar)" stroke-width="1.8" stroke-linejoin="round"/>
-            <defs><linearGradient id="gstar" x1="2" y1="12" x2="22" y2="12" gradientUnits="userSpaceOnUse"><stop stop-color="#00E38C"/><stop offset="1" stop-color="#3A86FF"/></linearGradient></defs>
-          </svg>
-          <p class="perfil-card-title">Cashiro Premium</p>
-        </div>
+        <p class="perfil-card-title">🚀 Cashiro Premium</p>
         <p class="perfil-card-sub">Desbloquea todo el potencial</p>
         <ul class="premium-lista">
-          <li>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><polyline points="20,6 9,17 4,12" stroke="#00E38C" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Historial ilimitado
-          </li>
-          <li>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><polyline points="20,6 9,17 4,12" stroke="#00E38C" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Gráficas avanzadas
-          </li>
-          <li>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><polyline points="20,6 9,17 4,12" stroke="#00E38C" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Exportar a PDF y Excel
-          </li>
-          <li>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><polyline points="20,6 9,17 4,12" stroke="#00E38C" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Múltiples usuarios
-          </li>
-          <li>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><polyline points="20,6 9,17 4,12" stroke="#00E38C" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Recordatorios inteligentes
-          </li>
+          <li>✅ Historial ilimitado</li>
+          <li>✅ Gráficas avanzadas</li>
+          <li>✅ Exportar a PDF y Excel</li>
+          <li>✅ Múltiples usuarios</li>
+          <li>✅ Recordatorios inteligentes</li>
         </ul>
         <button class="btn-premium">Próximamente — $9.900/mes</button>
       </div>
 
-      <!-- Conectar Google (invitados) -->
       <div id="btn-conectar-google" style="display:none">
         <div class="perfil-card" style="border-color:rgba(0,227,140,0.25);text-align:center;gap:14px">
-          <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:4px">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-              <path d="M6.5 19C4 19 2 17 2 14.5C2 12.3 3.5 10.4 5.6 10C6.1 7.2 8.6 5 11.5 5C14.1 5 16.3 6.6 17.2 9C19.3 9.3 21 11.1 21 13.5C21 16 19 18 16.5 18" stroke="url(#gnube)" stroke-width="1.8" stroke-linecap="round"/>
-              <polyline points="9,16 12,13 15,16" stroke="url(#gnube)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-              <line x1="12" y1="13" x2="12" y2="20" stroke="url(#gnube)" stroke-width="1.8" stroke-linecap="round"/>
-              <defs><linearGradient id="gnube" x1="2" y1="12" x2="21" y2="12" gradientUnits="userSpaceOnUse"><stop stop-color="#00E38C"/><stop offset="1" stop-color="#3A86FF"/></linearGradient></defs>
-            </svg>
-            <p class="perfil-card-title">Respalda tus datos</p>
-          </div>
-          <p class="perfil-card-sub">Conecta Google para no perder tu información si cambias de celular</p>
+          <p class="perfil-card-title">☁️ Respalda tus datos</p>
+          <p class="perfil-card-sub">Conecta Google para no perder tu información</p>
           <button class="btn-google" onclick="handleGoogleLogin()">
             <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.2l6.7-6.7C35.7 2.5 30.2 0 24 0 14.7 0 6.7 5.5 2.8 13.5l7.8 6C12.5 13 17.8 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v8.5h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4 7.1-10 7.1-17z"/><path fill="#FBBC05" d="M10.6 28.5c-.5-1.5-.8-3-.8-4.5s.3-3 .8-4.5l-7.8-6C1 16.5 0 20.1 0 24s1 7.5 2.8 10.5l7.8-6z"/><path fill="#34A853" d="M24 48c6.2 0 11.4-2 15.2-5.5l-7.5-5.8c-2 1.4-4.6 2.2-7.7 2.2-6.2 0-11.5-4.2-13.4-9.9l-7.8 6C6.7 42.5 14.7 48 24 48z"/></svg>
             Conectar con Google
@@ -410,26 +206,14 @@
         </div>
       </div>
 
-      <!-- Cerrar sesión (usuarios con cuenta) -->
-      <button class="btn-danger-outline" id="btn-cerrar-sesion" style="display:none" onclick="logout()">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style="vertical-align:middle;margin-right:8px">
-          <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" stroke="#FF4D6D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        Cerrar sesión
-      </button>
+      <button class="btn-danger-outline" id="btn-cerrar-sesion" style="display:none" onclick="logout()">🚪 Cerrar sesión</button>
     </div>
   </div>
 
-  <!-- ===== MODAL EDITAR GASTO ===== -->
+  <!-- MODAL EDITAR -->
   <div class="modal-overlay" id="modal-editar">
     <div class="modal-box">
-      <div style="display:flex;align-items:center;justify-content:center;gap:8px">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-          <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" stroke="#00E38C" stroke-width="2" stroke-linecap="round"/>
-          <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" stroke="#00E38C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        <p class="modal-title">Editar Gasto</p>
-      </div>
+      <p class="modal-title">✏️ Editar Gasto</p>
       <input type="hidden" id="edit-id" />
       <div class="form-group">
         <label>Categoría</label>
@@ -444,156 +228,66 @@
           <option value="Otro">📦 Otro</option>
         </select>
       </div>
+      <div class="form-group"><label>Descripción</label><input type="text" id="edit-desc" /></div>
+      <div class="form-group"><label>Monto ($)</label><input type="number" id="edit-monto" /></div>
+      <div class="form-group"><label>Fecha</label><input type="date" id="edit-fecha" /></div>
       <div class="form-group">
-        <label>Descripción</label>
-        <input type="text" id="edit-desc" placeholder="Descripción del gasto" />
-      </div>
-      <div class="form-group">
-        <label>Monto ($)</label>
-        <input type="number" id="edit-monto" />
-      </div>
-      <div class="form-group">
-        <label>Fecha</label>
-        <input type="date" id="edit-fecha" />
-      </div>
-      <div class="form-group">
-        <label>Tipo de gasto</label>
+        <label>Tipo</label>
         <select id="edit-tipo" onchange="toggleFechaFinEdit()">
-          <option value="variable">💸 Gasto del mes (variable)</option>
-          <option value="fijo">🔁 Gasto fijo (se repite cada mes)</option>
+          <option value="variable">💸 Variable</option>
+          <option value="fijo">🔁 Fijo mensual</option>
         </select>
       </div>
       <div class="form-group" id="edit-grupo-fecha-fin" style="display:none">
-        <label>¿Hasta cuándo? (opcional)</label>
+        <label>¿Hasta cuándo?</label>
         <input type="month" id="edit-fecha-fin" />
       </div>
       <div id="edit-estado-fijo" style="display:none">
-        <button class="btn-toggle-fijo" id="btn-toggle-activo" onclick="toggleActivoFijo()">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style="vertical-align:middle;margin-right:6px">
-            <rect x="6" y="4" width="4" height="16" rx="1" stroke="currentColor" stroke-width="2"/>
-            <rect x="14" y="4" width="4" height="16" rx="1" stroke="currentColor" stroke-width="2"/>
-          </svg>
-          Desactivar este gasto fijo
-        </button>
+        <button class="btn-toggle-fijo" id="btn-toggle-activo" onclick="toggleActivoFijo()">⏸️ Desactivar este gasto fijo</button>
       </div>
       <div class="modal-actions">
-        <button class="btn-cancelar" onclick="cerrarModal()">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" style="vertical-align:middle;margin-right:4px">
-            <line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            <line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-          Cancelar
-        </button>
-        <button class="btn-guardar-edit" onclick="guardarEdicion()">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" style="vertical-align:middle;margin-right:4px">
-            <polyline points="20,6 9,17 4,12" stroke="#0B0F1A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          Guardar
-        </button>
+        <button class="btn-cancelar" onclick="cerrarModal()">Cancelar</button>
+        <button class="btn-guardar-edit" onclick="guardarEdicion()">Guardar</button>
       </div>
-      <button class="btn-eliminar-gasto" onclick="eliminarGasto()">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" style="vertical-align:middle;margin-right:6px">
-          <polyline points="3,6 5,6 21,6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          <path d="M10 11v6M14 11v6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-        </svg>
-        Eliminar este gasto
-      </button>
+      <button class="btn-eliminar-gasto" onclick="eliminarGasto()">🗑️ Eliminar este gasto</button>
     </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script type="module" src="firebase.js"></script>
-  <script src="app.js"></script>
-  <!-- ===== FAB MENU ===== -->
-  <div id="fab-menu" class="fab-menu" style="display:none">
-    <div class="fab-menu-backdrop" onclick="cerrarFabMenu()"></div>
-    <div class="fab-menu-options">
-      <button class="fab-option ingreso" onclick="cerrarFabMenu(); showScreen('screen-ingreso')">
-        <div class="fab-option-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-            <circle cx="12" cy="12" r="9" stroke="#00E38C" stroke-width="1.8"/>
-            <line x1="12" y1="8" x2="12" y2="16" stroke="#00E38C" stroke-width="2" stroke-linecap="round"/>
-            <line x1="8" y1="12" x2="16" y2="12" stroke="#00E38C" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-        </div>
-        <span>Agregar ingreso</span>
-      </button>
-      <button class="fab-option gasto" onclick="cerrarFabMenu(); showScreen('screen-gasto')">
-        <div class="fab-option-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-            <circle cx="12" cy="12" r="9" stroke="#FF4D6D" stroke-width="1.8"/>
-            <line x1="8" y1="12" x2="16" y2="12" stroke="#FF4D6D" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-        </div>
-        <span>Agregar gasto</span>
-      </button>
-    </div>
-  </div>
-  <!-- ===== NAV GLOBAL ===== -->
-  <div class="bottom-nav" id="bottom-nav-global">
+  <!-- NAV GLOBAL -->
+  <div class="bottom-nav" id="bottom-nav-global" style="display:none">
     <button class="nav-btn active" id="nav-inicio" onclick="navTo('screen-dashboard', this)">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-        <path d="M3 12L12 3l9 9M5 10v9a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1v-9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M3 12L12 3l9 9M5 10v9a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1v-9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       <span>Inicio</span>
     </button>
     <button class="nav-btn" id="nav-movimientos" onclick="navTo('screen-historial', this)">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-        <polyline points="22,12 18,12 15,21 9,3 6,12 2,12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       <span>Movimientos</span>
     </button>
     <button class="nav-btn nav-fab" onclick="toggleFabMenu()">
-      <div class="nav-fab-circle" id="fab-icon">
-        <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
-          <line x1="12" y1="5" x2="12" y2="19" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
-          <line x1="5" y1="12" x2="19" y2="12" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
-        </svg>
+      <div class="nav-fab-circle">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><line x1="12" y1="5" x2="12" y2="19" stroke="white" stroke-width="2.5" stroke-linecap="round"/><line x1="5" y1="12" x2="19" y2="12" stroke="white" stroke-width="2.5" stroke-linecap="round"/></svg>
       </div>
-</button>
-      <button class="nav-btn" id="nav-servicios" onclick="navTo('screen-servicios', this)">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-          <rect x="3" y="5" width="18" height="16" rx="2.5" stroke="currentColor" stroke-width="2"/>
-          <line x1="8" y1="3" x2="8" y2="7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          <line x1="16" y1="3" x2="16" y2="7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          <line x1="3" y1="10" x2="21" y2="10" stroke="currentColor" stroke-width="1.5"/>
-          <line x1="8" y1="14" x2="16" y2="14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-          <line x1="8" y1="18" x2="13" y2="18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-        </svg>
-        <span>Servicios</span>
-      </button>
-      <button class="nav-btn" id="nav-perfil" onclick="navTo('screen-perfil', this)">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-          <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2"/>
-          <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-        </svg>
-        <span>Perfil</span>
-      </button>
-    </div>
+    </button>
+    <button class="nav-btn" id="nav-servicios" onclick="navTo('screen-servicios', this)">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="16" rx="2.5" stroke="currentColor" stroke-width="2"/><line x1="8" y1="3" x2="8" y2="7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="16" y1="3" x2="16" y2="7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="3" y1="10" x2="21" y2="10" stroke="currentColor" stroke-width="1.5"/><line x1="8" y1="14" x2="16" y2="14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="8" y1="18" x2="13" y2="18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <span>Servicios</span>
+    </button>
+    <button class="nav-btn" id="nav-perfil" onclick="navTo('screen-perfil', this)">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <span>Perfil</span>
+    </button>
   </div>
 
-  <!-- ===== FAB MENU ===== -->
+  <!-- FAB MENU -->
   <div id="fab-menu" class="fab-menu" style="display:none">
     <div class="fab-menu-backdrop" onclick="cerrarFabMenu()"></div>
     <div class="fab-menu-options">
       <button class="fab-option ingreso" onclick="cerrarFabMenu(); showScreen('screen-ingreso')">
-        <div class="fab-option-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-            <circle cx="12" cy="12" r="9" stroke="#00E38C" stroke-width="1.8"/>
-            <line x1="12" y1="8" x2="12" y2="16" stroke="#00E38C" stroke-width="2" stroke-linecap="round"/>
-            <line x1="8" y1="12" x2="16" y2="12" stroke="#00E38C" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-        </div>
+        <div class="fab-option-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#00E38C" stroke-width="1.8"/><line x1="12" y1="8" x2="12" y2="16" stroke="#00E38C" stroke-width="2" stroke-linecap="round"/><line x1="8" y1="12" x2="16" y2="12" stroke="#00E38C" stroke-width="2" stroke-linecap="round"/></svg></div>
         <span>Agregar ingreso</span>
       </button>
       <button class="fab-option gasto" onclick="cerrarFabMenu(); showScreen('screen-gasto')">
-        <div class="fab-option-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-            <circle cx="12" cy="12" r="9" stroke="#FF4D6D" stroke-width="1.8"/>
-            <line x1="8" y1="12" x2="16" y2="12" stroke="#FF4D6D" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-        </div>
+        <div class="fab-option-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#FF4D6D" stroke-width="1.8"/><line x1="8" y1="12" x2="16" y2="12" stroke="#FF4D6D" stroke-width="2" stroke-linecap="round"/></svg></div>
         <span>Agregar gasto</span>
       </button>
     </div>
