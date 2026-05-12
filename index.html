@@ -560,15 +560,49 @@
         <line x1="8" y1="14" x2="16" y2="14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
         <line x1="8" y1="18" x2="13" y2="18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
       </svg>
-      <span>Servicios</span>
-    </button>
-    <button class="nav-btn" id="nav-perfil" onclick="navTo('screen-perfil', this)">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-        <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2"/>
-        <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-      </svg>
-      <span>Perfil</span>
-    </button>
+     <span>Servicios</span>
+      </button>
+      <button class="nav-btn" id="nav-perfil" onclick="navTo('screen-perfil', this)">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2"/>
+          <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <span>Perfil</span>
+      </button>
+    </div>
   </div>
+
+  <!-- ===== FAB MENU ===== -->
+  <div id="fab-menu" class="fab-menu" style="display:none">
+    <div class="fab-menu-backdrop" onclick="cerrarFabMenu()"></div>
+    <div class="fab-menu-options">
+      <button class="fab-option ingreso" onclick="cerrarFabMenu(); showScreen('screen-ingreso')">
+        <div class="fab-option-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="9" stroke="#00E38C" stroke-width="1.8"/>
+            <line x1="12" y1="8" x2="12" y2="16" stroke="#00E38C" stroke-width="2" stroke-linecap="round"/>
+            <line x1="8" y1="12" x2="16" y2="12" stroke="#00E38C" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <span>Agregar ingreso</span>
+      </button>
+      <button class="fab-option gasto" onclick="cerrarFabMenu(); showScreen('screen-gasto')">
+        <div class="fab-option-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="9" stroke="#FF4D6D" stroke-width="1.8"/>
+            <line x1="8" y1="12" x2="16" y2="12" stroke="#FF4D6D" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <span>Agregar gasto</span>
+      </button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="firebase.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
