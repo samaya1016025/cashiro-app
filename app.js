@@ -19,8 +19,15 @@ function setData(key, val) {
 
 // ===== NAVEGACIÓN =====
 function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.screen').forEach(s => {
+    s.classList.remove('active');
+    s.style.display = 'none';
+  });
+  const target = document.getElementById(id);
+  if (target) {
+    target.classList.add('active');
+    target.style.display = 'block';
+  }
 
   const nav = document.getElementById('bottom-nav-global');
   if (nav) nav.style.display = id === 'screen-bienvenida' ? 'none' : 'flex';
@@ -39,6 +46,8 @@ function showScreen(id) {
     const hoy = new Date().toISOString().split('T')[0];
     document.getElementById('gasto-fecha').value = hoy;
   }
+
+  window.scrollTo(0, 0);
 }
 
 function actualizarNav(activeId) {
@@ -55,7 +64,7 @@ function navTo(screenId, btn) {
 function ocultarTodosScreens() {
   document.querySelectorAll('.screen').forEach(s => {
     s.classList.remove('active');
-    s.style.display = '';
+    s.style.display = 'none';
   });
 }
 
