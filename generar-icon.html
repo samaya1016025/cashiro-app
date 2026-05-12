@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head><title>Generar Icon</title></head>
+<body>
+<canvas id="c" width="512" height="512"></canvas>
+<a id="dl" download="icon.png">Descargar icon.png</a>
+<script>
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+const size = 512;
+
+// Fondo
+const bg = ctx.createLinearGradient(0, 0, size, size);
+bg.addColorStop(0, '#0B0F1A');
+bg.addColorStop(1, '#1A2233');
+ctx.fillStyle = bg;
+roundRect(ctx, 0, 0, size, size, 80);
+ctx.fill();
+
+// C con pulso
+ctx.strokeStyle = 'transparent';
+ctx.lineWidth = 0;
+
+const grad = ctx.createLinearGradient(80, 256, 432, 256);
+grad.addColorStop(0, '#00E38C');
+grad.addColorStop(1, '#3A86FF');
+ctx.strokeStyle = grad;
+ctx.lineCap = 'round';
+ctx.lineJoin = 'round';
+
+// Letra C
+ctx.lineWidth = 36;
+ctx.beginPath();
+ctx.arc(240, 256, 140, Math.PI * 0.35, Math.PI * 1.65);
+ctx.stroke();
+
+// Línea de pulso dentro de la C
+ctx.lineWidth = 22;
+ctx.beginPath();
+const points = [
+  [120, 256], [160, 256], [190, 176],
+  [230, 336], [265, 196], [300, 286],
+  [330, 256], [370, 256]
+];
+ctx.moveTo(points[0][0], points[0][1]);
+for (let i = 1; i < points.length; i++) {
+  ctx.lineTo(points[i][0], points[i][1]);
+}
+ctx.stroke();
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+
+// Botón de descarga
+const dl = document.getElementById('dl');
+dl.href = canvas.toDataURL('image/png');
+dl.style.display = 'block';
+dl.style.marginTop = '20px';
+dl.style.fontSize = '20px';
+</script>
+</body>
+</html>
