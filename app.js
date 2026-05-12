@@ -21,12 +21,11 @@ function setData(key, val) {
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => {
     s.classList.remove('active');
-    s.style.display = 'none';
+    s.style.display = '';
   });
   const target = document.getElementById(id);
   if (target) {
     target.classList.add('active');
-    target.style.display = 'block';
   }
 
   const nav = document.getElementById('bottom-nav-global');
@@ -46,7 +45,6 @@ function showScreen(id) {
     const hoy = new Date().toISOString().split('T')[0];
     document.getElementById('gasto-fecha').value = hoy;
   }
-
   window.scrollTo(0, 0);
 }
 
@@ -64,7 +62,7 @@ function navTo(screenId, btn) {
 function ocultarTodosScreens() {
   document.querySelectorAll('.screen').forEach(s => {
     s.classList.remove('active');
-    s.style.display = 'none';
+    s.style.display = '';
   });
 }
 
