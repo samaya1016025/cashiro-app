@@ -159,7 +159,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 54px 20px 16px;
+  padding: 16px 20px 14px;
   background: rgba(11,15,26,0.9);
   backdrop-filter: blur(16px);
   position: sticky;
