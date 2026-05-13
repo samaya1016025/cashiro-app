@@ -668,7 +668,7 @@ function formatFecha(str) {
   return `${d}/${m}/${y}`;
 }
 
-// ===== INIT =====
+
 // ===== INIT =====
 document.addEventListener('DOMContentLoaded', async () => {
   const hoy     = new Date().toISOString().split('T')[0];
@@ -691,10 +691,17 @@ document.addEventListener('DOMContentLoaded', async () => {
   const fabMenu = document.getElementById('fab-menu');
   if (fabMenu) fabMenu.style.display = 'none';
 
+  // Mostrar splash mientras verifica sesión
+  ocultarTodosScreens();
+  const splash = document.getElementById('screen-splash');
+  if (splash) {
+    splash.classList.add('active');
+    splash.style.display = 'block';
+  }
+
   // Verificar sesión activa
   try {
     const user = await getCurrentUser();
-    console.log('Sesion activa:', user ? user.email : 'null');
     if (user) {
       currentUser = user;
       modoGoogle  = true;
@@ -714,6 +721,19 @@ document.addEventListener('DOMContentLoaded', async () => {
   } catch(e) {
     console.error('Error auth:', e);
   }
+
+  // Sin sesión — mostrar bienvenida
+  ocultarTodosScreens();
+  const bienvenida = document.getElementById('screen-bienvenida');
+  if (bienvenida) {
+    bienvenida.classList.add('active');
+    bienvenida.style.display = 'block';
+  }
+
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/cashiroapp/sw.js').catch(() => {});
+  }
+});
 
   // Sin sesión — mostrar bienvenida
   ocultarTodosScreens();
