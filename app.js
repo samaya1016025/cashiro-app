@@ -24,12 +24,10 @@ function showScreen(id) {
     s.style.display = '';
   });
   const target = document.getElementById(id);
-  if (target) {
-    target.classList.add('active');
-  }
+  if (target) target.classList.add('active');
 
   const nav = document.getElementById('bottom-nav-global');
-  if (nav) nav.style.display = id === 'screen-bienvenida' ? 'none' : 'flex';
+  if (nav) nav.style.display = id === 'screen-bienvenida' || id === 'screen-splash' ? 'none' : 'flex';
 
   if (id === 'screen-dashboard') actualizarNav('nav-inicio');
   if (id === 'screen-historial') actualizarNav('nav-movimientos');
@@ -62,7 +60,7 @@ function navTo(screenId, btn) {
 function ocultarTodosScreens() {
   document.querySelectorAll('.screen').forEach(s => {
     s.classList.remove('active');
-    s.style.display = '';
+    s.style.display = 'none';
   });
 }
 
@@ -123,11 +121,60 @@ function logout() {
   currentUser = null;
   modoGoogle  = false;
   userId      = 'local';
+  ocultarTodosScreens();
   const nav = document.getElementById('bottom-nav-global');
   if (nav) nav.style.display = 'none';
-  ocultarTodosScreens();
-  document.getElementById('screen-bienvenida').classList.add('active');
-  document.getElementById('screen-bienvenida').style.display = 'block';
+  const bienvenida = document.getElementById('screen-bienvenida');
+  if (bienvenida) {
+    bienvenida.classList.add('active');
+    bienvenida.style.display = 'block';
+  }
+}
+
+// ===== GOOGLE AUTH =====
+async function handleGoogleLogin() {
+  showToast('⏳ Conectando con Google...');
+  try {
+    const user = await loginGoogle();
+    if (user) {
+      currentUser = user;
+      modoGoogle  = true;
+      userId      = user.uid;
+
+      const gastosInvitado    = getData('gastos');
+      const ingresosInvitado  = getData('ingresos');
+      const serviciosInvitado = getData('servicios');
+      const hayLocales = gastosInvitado.length || ingresosInvitado.length || serviciosInvitado.length;
+
+      const [gastosNube, ingresosNube, serviciosNube] = await Promise.all([
+        obtenerColeccion(user.uid, 'gastos'),
+        obtenerColeccion(user.uid, 'ingresos'),
+        obtenerColeccion(user.uid, 'servicios')
+      ]);
+      const hayNube = gastosNube.length || ingresosNube.length || serviciosNube.length;
+
+      if (hayLocales && !hayNube) {
+        const promesas = [];
+        gastosInvitado.forEach(g    => promesas.push(guardarDato(user.uid, 'gastos',    g.id,                 g)));
+        ingresosInvitado.forEach(i  => promesas.push(guardarDato(user.uid, 'ingresos',  `${i.mes}_${i.anio}`, i)));
+        serviciosInvitado.forEach(s => promesas.push(guardarDato(user.uid, 'servicios', s.id,                 s)));
+        await Promise.all(promesas);
+        showToast('☁️ Datos migrados a tu cuenta');
+      } else if (hayNube) {
+        setData('gastos',    gastosNube);
+        setData('ingresos',  ingresosNube);
+        setData('servicios', serviciosNube);
+      }
+
+      entrarAlApp(user.displayName || 'Usuario', user.email);
+      showToast('✅ Bienvenido ' + (user.displayName || '').split(' ')[0]);
+    } else {
+      showToast('❌ Error al conectar con Google');
+    }
+  } catch(e) {
+    console.error(e);
+    showToast('❌ Error al conectar con Google');
+  }
 }
 
 // ===== INGRESO MENSUAL =====
@@ -290,7 +337,7 @@ function guardarServicio() {
   const monto  = parseFloat(document.getElementById('srv-monto').value);
   const dia    = parseInt(document.getElementById('srv-dia').value);
   if (!nombre)                     { showToast('⚠️ Escribe el nombre'); return; }
-  if (!modoGoogle || monto <= 0)   { showToast('⚠️ Monto inválido'); return; }
+  if (!monto || monto <= 0)        { showToast('⚠️ Monto inválido'); return; }
   if (!dia || dia < 1 || dia > 31) { showToast('⚠️ Día inválido (1-31)'); return; }
   const servicios = getData('servicios');
   const nuevo = { id: Date.now(), nombre, monto, dia };
@@ -371,7 +418,7 @@ function renderDashboard() {
   const saldo        = totalIngreso - totalGastos;
 
   document.getElementById('saldo-display').textContent = '$' + formatNum(saldo);
-  document.getElementById('mes-display').textContent   =
+  document.getElementById('mes-display').textContent =
     `${MESES[mes]} ${anio}  ·  Ingreso $${formatNum(totalIngreso)}  ·  Gastos $${formatNum(totalGastos)}`;
 
   const saldoEl = document.getElementById('saldo-display');
@@ -560,6 +607,7 @@ function renderGraficas() {
           ${l}: $${formatNum(dataBar[i])}
         </div>`).join('')}
     </div>`;
+
   const porCat = {};
   obtenerGastosDeMes(gastos, hoy.getMonth(), hoy.getFullYear())
     .forEach(g => { porCat[g.cat] = (porCat[g.cat] || 0) + g.monto; });
@@ -594,61 +642,14 @@ function renderGraficas() {
 // ===== FIREBASE HELPERS =====
 async function guardarEnFirebase(coleccion, id, data) {
   if (!modoGoogle || !currentUser) return;
-  try {
-    await guardarDato(currentUser.uid, coleccion, id, data);
-  } catch(e) { console.error(e); }
+  try { await guardarDato(currentUser.uid, coleccion, id, data); }
+  catch(e) { console.error(e); }
 }
 
 async function eliminarDeFirebase(coleccion, id) {
   if (!modoGoogle || !currentUser) return;
-  try {
-    await eliminarDato(currentUser.uid, coleccion, id);
-  } catch(e) { console.error(e); }
-}
-
-// ===== GOOGLE AUTH =====
-async function handleGoogleLogin() {
-  showToast('⏳ Conectando con Google...');
-  try {
-    const user = await loginGoogle();
-    if (user) {
-      currentUser = user;
-      modoGoogle  = true;
-      userId      = user.uid;
-
-      const gastosInvitado    = getData('gastos');
-      const ingresosInvitado  = getData('ingresos');
-      const serviciosInvitado = getData('servicios');
-      const hayLocales = gastosInvitado.length || ingresosInvitado.length || serviciosInvitado.length;
-
-      const [gastosNube, ingresosNube, serviciosNube] = await Promise.all([
-        obtenerColeccion(user.uid, 'gastos'),
-        obtenerColeccion(user.uid, 'ingresos'),
-        obtenerColeccion(user.uid, 'servicios')
-      ]);
-      const hayNube = gastosNube.length || ingresosNube.length || serviciosNube.length;
-
-      if (hayLocales && !hayNube) {
-        const promesas = [];
-        gastosInvitado.forEach(g    => promesas.push(guardarDato(user.uid, 'gastos',    g.id,                 g)));
-        ingresosInvitado.forEach(i  => promesas.push(guardarDato(user.uid, 'ingresos',  `${i.mes}_${i.anio}`, i)));
-        serviciosInvitado.forEach(s => promesas.push(guardarDato(user.uid, 'servicios', s.id,                 s)));
-        await Promise.all(promesas);
-      } else if (hayNube) {
-        setData('gastos',    gastosNube);
-        setData('ingresos',  ingresosNube);
-        setData('servicios', serviciosNube);
-      }
-
-      entrarAlApp(user.displayName || 'Usuario', user.email);
-      showToast('✅ Bienvenido ' + (user.displayName || '').split(' ')[0]);
-    } else {
-      showToast('❌ Error al conectar con Google');
-    }
-  } catch(e) {
-    console.error(e);
-    showToast('❌ Error al conectar con Google');
-  }
+  try { await eliminarDato(currentUser.uid, coleccion, id); }
+  catch(e) { console.error(e); }
 }
 
 // ===== FAB MENU =====
@@ -667,7 +668,6 @@ function formatFecha(str) {
   const [y, m, d] = str.split('-');
   return `${d}/${m}/${y}`;
 }
-
 
 // ===== INIT =====
 document.addEventListener('DOMContentLoaded', async () => {
@@ -691,7 +691,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const fabMenu = document.getElementById('fab-menu');
   if (fabMenu) fabMenu.style.display = 'none';
 
-  // Mostrar splash mientras verifica sesión
+  // Mostrar splash
   ocultarTodosScreens();
   const splash = document.getElementById('screen-splash');
   if (splash) {
@@ -732,15 +732,5 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/cashiroapp/sw.js').catch(() => {});
-  }
-});
-
-  // Sin sesión — mostrar bienvenida
-  ocultarTodosScreens();
-  document.getElementById('screen-bienvenida').classList.add('active');
-  document.getElementById('screen-bienvenida').style.display = 'block';
-
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/cashiro-app/sw.js').catch(() => {});
   }
 });
