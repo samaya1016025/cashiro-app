@@ -763,19 +763,28 @@ body {
   z-index: 100;
 }
 /* ===== SPLASH ===== */
+#screen-splash {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: #0B0F1A;
+}
 .splash-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 100vh;
-  gap: 24px;
-  background: linear-gradient(160deg, #0B0F1A 0%, #1A2233 100%);
+  gap: 20px;
+  width: 100%;
+  padding: 0 40px;
+  text-align: center;
 }
 .splash-tagline {
   font-size: 14px;
   color: var(--text-muted);
   letter-spacing: 1px;
+  text-align: center;
 }
 .splash-bar-track {
   width: 160px;
@@ -783,6 +792,7 @@ body {
   background: rgba(255,255,255,0.08);
   border-radius: 99px;
   overflow: hidden;
+  margin: 0 auto;
 }
 .splash-bar-fill {
   height: 100%;
