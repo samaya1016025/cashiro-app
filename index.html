@@ -15,14 +15,21 @@
 <!-- SPLASH / CARGA -->
   <div id="screen-splash" class="screen active">
     <div class="splash-container">
-      <svg width="88" height="88" viewBox="0 0 72 72" fill="none">
-        <rect width="72" height="72" rx="20" fill="#0B0F1A"/>
+      <svg width="96" height="96" viewBox="0 0 72 72" fill="none">
+        <rect width="72" height="72" rx="22" fill="#0B0F1A"/>
+        <rect x="2" y="2" width="68" height="68" rx="20" fill="none" stroke="url(#gsborder)" stroke-width="1.5"/>
         <path d="M44 26C41.5 23.5 38 22 34 22C26.3 22 20 28.3 20 36C20 43.7 26.3 50 34 50C38 50 41.5 48.5 44 46" stroke="url(#gs)" stroke-width="3.5" stroke-linecap="round"/>
         <polyline points="26,36 31,31 36,38 41,28 46,34 51,30" stroke="url(#gs)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-        <defs><linearGradient id="gs" x1="20" y1="36" x2="52" y2="36" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#00E38C"/><stop offset="100%" stop-color="#3A86FF"/></linearGradient></defs>
+        <defs>
+          <linearGradient id="gs" x1="20" y1="36" x2="52" y2="36" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#00E38C"/><stop offset="100%" stop-color="#3A86FF"/></linearGradient>
+          <linearGradient id="gsborder" x1="0" y1="0" x2="72" y2="72" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#00E38C" stop-opacity="0.4"/><stop offset="100%" stop-color="#3A86FF" stop-opacity="0.4"/></linearGradient>
+        </defs>
       </svg>
-      <h1 class="login-title">Cashiro</h1>
-      <div class="splash-spinner"></div>
+      <h1 class="login-title" style="font-size:38px;letter-spacing:-1px">Cashiro</h1>
+      <p class="splash-tagline">Tu dinero bajo control</p>
+      <div class="splash-bar-track">
+        <div class="splash-bar-fill"></div>
+      </div>
     </div>
   </div>
   <!-- BIENVENIDA -->
