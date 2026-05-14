@@ -51,7 +51,7 @@ function renderPerfilUsuario(nombre = '', email = '') {
   if (emailEl) emailEl.textContent = profileEmail;
   if (photoEl) photoEl.src = profilePhoto;
   if (nameInput) {
-    nameInput.value = isEditingName ? profileNameDraft || profileName : profileName;
+    nameInput.value = profileNameDraft;
     nameInput.disabled = !isEditingName;
     nameInput.setAttribute('aria-invalid', profileNameError ? 'true' : 'false');
   }
@@ -67,14 +67,13 @@ function renderPerfilUsuario(nombre = '', email = '') {
 }
 function startEditNombre() {
   isEditingName = true;
-  profileNameDraft = getSavedProfileName() || document.querySelector('.perfil-user-name')?.textContent || '';
+  profileNameDraft = '';
   profileNameError = '';
   renderPerfilUsuario();
   setTimeout(() => {
     const input = document.getElementById('profile-name-input');
     if (input) {
       input.focus();
-      input.select();
     }
   }, 50);
 }

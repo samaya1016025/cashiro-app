@@ -807,18 +807,20 @@ body {
 .perfil-name-view {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   gap: 14px;
   padding: 14px 16px;
   background: rgba(255,255,255,0.04);
   border: 1px solid rgba(255,255,255,0.08);
   border-radius: 18px;
+  position: relative;
 }
 .perfil-user-name {
   font-size: 22px;
   font-weight: 800;
   color: var(--text);
   word-break: break-word;
+  text-align: center;
 }
 .btn-icon-edit {
   background: rgba(255,255,255,0.08);
@@ -829,6 +831,8 @@ body {
   cursor: pointer;
   font-size: 14px;
   transition: background 0.2s, transform 0.1s;
+  margin-left: auto;
+  flex-shrink: 0;
 }
 .btn-icon-edit:hover {
   background: rgba(255,255,255,0.12);
@@ -861,6 +865,7 @@ body {
   border: 1px solid rgba(255,255,255,0.08);
   background: rgba(255,255,255,0.05);
   color: var(--text);
+  text-align: center;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 .perfil-name-input:focus {
