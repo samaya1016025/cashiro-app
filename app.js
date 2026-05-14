@@ -57,7 +57,9 @@ function renderPerfilUsuario(nombre = '', email = '') {
   }
   if (nameError) nameError.textContent = profileNameError;
   if (nameDisplay) nameDisplay.style.display = isEditingName ? 'none' : 'flex';
-  if (nameEdit) nameEdit.style.display = isEditingName ? 'flex' : 'none';
+  if (nameEdit) {
+    nameEdit.classList.toggle('active', isEditingName);
+  }
   if (saveBtn) {
     saveBtn.disabled = loadingSaveProfile;
     saveBtn.textContent = loadingSaveProfile ? 'Guardando...' : 'Guardar';
