@@ -21,10 +21,13 @@ function setData(key, val) {
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => {
     s.classList.remove('active');
-    s.style.display = '';
+    s.style.display = 'none';
   });
   const target = document.getElementById(id);
-  if (target) target.classList.add('active');
+  if (target) {
+    target.classList.add('active');
+    target.style.display = '';
+  }
 
   const nav = document.getElementById('bottom-nav-global');
   if (nav) nav.style.display = id === 'screen-bienvenida' || id === 'screen-splash' ? 'none' : 'flex';
@@ -684,6 +687,9 @@ function formatFecha(str) {
   return `${d}/${m}/${y}`;
 }
 
+const MIN_SPLASH_TIME = 1400;
+function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
+
 // ===== INIT =====
 document.addEventListener('DOMContentLoaded', async () => {
   const hoy     = new Date().toISOString().split('T')[0];
@@ -706,17 +712,19 @@ document.addEventListener('DOMContentLoaded', async () => {
   const fabMenu = document.getElementById('fab-menu');
   if (fabMenu) fabMenu.style.display = 'none';
 
+  const splashStart = Date.now();
   // Mostrar splash
   ocultarTodosScreens();
   const splash = document.getElementById('screen-splash');
   if (splash) {
     splash.classList.add('active');
-    splash.style.display = 'block';
+    splash.style.display = '';
   }
 
   // Verificar sesión activa
+  let user = null;
   try {
-    const user = await getCurrentUser();
+    user = await getCurrentUser();
     if (user) {
       currentUser = user;
       modoGoogle  = true;
@@ -729,20 +737,26 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (gastosNube.length)    setData('gastos',    gastosNube);
       if (ingresosNube.length)  setData('ingresos',  ingresosNube);
       if (serviciosNube.length) setData('servicios', serviciosNube);
-      entrarAlApp(user.displayName || 'Usuario', user.email);
-      showToast('✅ Bienvenido ' + (user.displayName || '').split(' ')[0]);
-      return;
     }
   } catch(e) {
     console.error('Error auth:', e);
   }
 
-  // Sin sesión — mostrar bienvenida
-  ocultarTodosScreens();
-  const bienvenida = document.getElementById('screen-bienvenida');
-  if (bienvenida) {
-    bienvenida.classList.add('active');
-    bienvenida.style.display = 'block';
+  const elapsed = Date.now() - splashStart;
+  if (elapsed < MIN_SPLASH_TIME) {
+    await sleep(MIN_SPLASH_TIME - elapsed);
+  }
+
+  if (user) {
+    entrarAlApp(user.displayName || 'Usuario', user.email);
+    showToast('✅ Bienvenido ' + (user.displayName || '').split(' ')[0]);
+  } else {
+    ocultarTodosScreens();
+    const bienvenida = document.getElementById('screen-bienvenida');
+    if (bienvenida) {
+      bienvenida.classList.add('active');
+      bienvenida.style.display = '';
+    }
   }
 
   if ('serviceWorker' in navigator) {
