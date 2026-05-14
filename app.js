@@ -16,6 +16,99 @@ function getData(key) {
 function setData(key, val) {
   localStorage.setItem(userId + '_' + key, JSON.stringify(val));
 }
+function getProfileItem(key) {
+  return localStorage.getItem(userId + '_perfil_' + key) || '';
+}
+function setProfileItem(key, value) {
+  localStorage.setItem(userId + '_perfil_' + key, value);
+}
+function renderPerfilUsuario(nombre = '', email = '', plan = '') {
+  const storedName = getProfileItem('nombre');
+  const currentName = document.querySelector('.perfil-nombre')?.textContent || 'Invitado';
+  const currentEmail = document.querySelector('.perfil-email')?.textContent || 'Sin correo';
+  const currentPlan = document.querySelector('.perfil-plan')?.textContent || 'Sin cuenta';
+  const profileName = storedName || nombre || currentName;
+  const profileEmail = email || currentEmail;
+  const profilePhoto = getProfileItem('foto') || '';
+  const nombreEl = document.querySelector('.perfil-nombre');
+  const emailEl = document.querySelector('.perfil-email');
+  const planEl = document.querySelector('.perfil-plan');
+  const photoEl = document.getElementById('profile-photo');
+  const nameInput = document.getElementById('profile-name-input');
+  const fallback = document.querySelector('.avatar-fallback');
+  if (nombreEl) nombreEl.textContent = profileName;
+  if (emailEl) emailEl.textContent = profileEmail;
+  if (planEl) planEl.textContent = plan || currentPlan;
+  if (nameInput) nameInput.value = profileName;
+  if (photoEl) photoEl.src = profilePhoto;
+  if (fallback) fallback.style.display = profilePhoto ? 'none' : 'flex';
+}
+function toggleEditNombre() {
+  const btn = document.getElementById('profile-btn-action');
+  const input = document.getElementById('profile-name-input');
+  if (!btn || !input) return;
+  const accion = btn.textContent.toLowerCase();
+  if (accion.includes('editar')) {
+    input.disabled = false;
+    input.focus();
+    input.select();
+  } else if (accion.includes('guardar')) {
+    guardarNombrePerfil();
+    input.disabled = true;
+  }
+}
+function actualizarBotonPerfil() {
+  const nombreInput = document.getElementById('profile-name-input');
+  const btn = document.getElementById('profile-btn-action');
+  if (!nombreInput || !btn) return;
+  const nombreActual = nombreInput.value.trim();
+  const nombreGuardado = getProfileItem('nombre');
+  const esIgual = nombreActual === nombreGuardado;
+  btn.textContent = esIgual ? 'Editar' : 'Guardar';
+  btn.classList.toggle('disabled', esIgual);
+  btn.disabled = esIgual;
+}
+function handleProfilePhoto(event) {
+  const file = event.target.files && event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    const dataUrl = reader.result;
+    if (typeof dataUrl === 'string') {
+      setProfileItem('foto', dataUrl);
+      renderPerfilUsuario();
+      showToast('✅ Foto de perfil guardada');
+    }
+  };
+  reader.readAsDataURL(file);
+}
+function guardarNombrePerfil() {
+  const nombreInput = document.getElementById('profile-name-input');
+  if (!nombreInput) return;
+  const nombre = nombreInput.value.trim();
+  if (!nombre) {
+    showProfileFeedback('⚠️ Ingresa tu nombre', true);
+    showToast('⚠️ Ingresa tu nombre');
+    return;
+  }
+  setProfileItem('nombre', nombre);
+  renderPerfilUsuario();
+  actualizarBotonPerfil();
+  nombreInput.disabled = true;
+  showToast('✅ Nombre actualizado');
+}
+function showProfileFeedback(message, isError = false) {
+  const feedback = document.getElementById('profile-confirmation');
+  if (!feedback) return;
+  feedback.textContent = message;
+  feedback.classList.add('visible');
+  feedback.style.background = isError ? 'rgba(255, 121, 97, 0.12)' : 'rgba(0, 227, 140, 0.08)';
+  feedback.style.color = isError ? '#E03E3E' : 'var(--success)';
+  clearTimeout(feedback._timeout);
+  feedback._timeout = setTimeout(() => {
+    feedback.classList.remove('visible');
+  }, 2800);
+}
 
 // ===== NAVEGACIÓN =====
 function showScreen(id) {
@@ -82,7 +175,7 @@ function showToast(msg) {
 }
 
 // ===== ENTRADA =====
-function entrarAlApp(nombre, detalle) {
+function entrarAlApp(nombre, email, detalle) {
   // Ocultar todo primero
   document.querySelectorAll('.screen').forEach(s => {
     s.classList.remove('active');
@@ -100,11 +193,7 @@ function entrarAlApp(nombre, detalle) {
     dashboard.style.display = 'block';
   }
 
-  // Actualizar perfil
-  const nombreEl = document.querySelector('.perfil-nombre');
-  const planEl   = document.querySelector('.perfil-plan');
-  if (nombreEl) nombreEl.textContent = nombre;
-  if (planEl)   planEl.textContent   = detalle;
+  renderPerfilUsuario(nombre, email, detalle);
 
   const esInvitado = !modoGoogle;
   const btnGoogle  = document.getElementById('btn-conectar-google');
@@ -124,7 +213,7 @@ function entrarComoInvitado() {
   userId      = 'invitado_' + deviceId;
   modoGoogle  = false;
   currentUser = null;
-  entrarAlApp('Sin cuenta', 'Datos solo en este dispositivo');
+  entrarAlApp('Sin cuenta', '', 'Datos solo en este dispositivo');
   showToast('💡 Conéctate con Google para respaldar');
 }
 
@@ -184,7 +273,7 @@ async function handleGoogleLogin() {
         setData('servicios', serviciosNube);
       }
 
-      entrarAlApp(user.displayName || 'Usuario', user.email);
+      entrarAlApp(user.displayName || 'Usuario', user.email, 'Cuenta Google activa');
       showToast('✅ Bienvenido ' + (user.displayName || '').split(' ')[0]);
     } else {
       showToast('❌ Error al conectar con Google');
@@ -655,6 +744,104 @@ function renderGraficas() {
           ${l}: $${formatNum(catData[i])}
         </div>`).join('')}
     </div>`;
+  const analisis = document.getElementById('analisis-result');
+  if (analisis) analisis.innerHTML = 'Dale al botón y te muestro tu resumen de gastos.';
+}
+
+function setAnalisisText(html) {
+  const analisis = document.getElementById('analisis-result');
+  if (analisis) analisis.innerHTML = html;
+}
+
+function generarAnalisisMovimientos() {
+  const gastos = getData('gastos');
+  if (!gastos.length) {
+    setAnalisisText('Aún no tienes gastos registrados. Añade algunos y dale al botón para ver tu resumen.');
+    return;
+  }
+
+  const hoy = new Date();
+  const mes = hoy.getMonth();
+  const anio = hoy.getFullYear();
+  const gastosMes = obtenerGastosDeMes(gastos, mes, anio);
+  const totalActual = gastosMes.reduce((sum, gasto) => sum + gasto.monto, 0);
+
+  if (!totalActual) {
+    setAnalisisText('Todavía no hay gastos este mes. Agrega algunos y vuelve a ver tu resumen.');
+    return;
+  }
+
+  const prevMes = mes === 0 ? 11 : mes - 1;
+  const prevAnio = mes === 0 ? anio - 1 : anio;
+  const gastosPrev = obtenerGastosDeMes(gastos, prevMes, prevAnio);
+  const totalPrev = gastosPrev.reduce((sum, gasto) => sum + gasto.monto, 0);
+  const cambio = totalPrev === 0 ? null : Math.round(((totalActual - totalPrev) / totalPrev) * 100);
+
+  const categorias = {};
+  gastosMes.forEach(g => { categorias[g.cat] = (categorias[g.cat] || 0) + g.monto; });
+  const categoriasOrdenadas = Object.entries(categorias).sort((a, b) => b[1] - a[1]);
+  const [topCat, topMonto] = categoriasOrdenadas[0] || ['Sin categoría', 0];
+  const participacionTop = Math.round((topMonto / totalActual) * 100);
+
+  const gastosFijos = gastosMes
+    .filter(g => g.tipo === 'fijo' && g.activo !== false)
+    .reduce((sum, gasto) => sum + gasto.monto, 0);
+
+  const topGastos = [...gastosMes]
+    .sort((a, b) => b.monto - a.monto)
+    .slice(0, 3);
+
+  const topGastosHtml = topGastos.map((g, index) => `
+    <div class="analysis-list-item">
+      <div class="analysis-list-icon">${index + 1}</div>
+      <div>
+        <div class="analysis-list-item-title">${g.cat}</div>
+        <div class="analysis-list-item-sub">$${formatNum(g.monto)}</div>
+      </div>
+    </div>
+  `).join('');
+
+  const cambioTexto = totalPrev === 0
+    ? `Sin comparación con ${MESES[prevMes]} ${prevAnio}`
+    : cambio > 0
+      ? `+${Math.abs(cambio)}% vs ${MESES[prevMes]} ${prevAnio}`
+      : cambio < 0
+        ? `-${Math.abs(cambio)}% vs ${MESES[prevMes]} ${prevAnio}`
+        : `igual a ${MESES[prevMes]} ${prevAnio}`;
+
+  const fixedText = gastosFijos
+    ? `$${formatNum(gastosFijos)}`
+    : 'Sin gastos fijos activos';
+
+  setAnalisisText(`
+    <div class="analysis-summary">
+      <div class="analysis-row">
+        <div>
+          <div class="analysis-key">Total del mes</div>
+          <div class="analysis-value">$${formatNum(totalActual)}</div>
+        </div>
+        <span class="analysis-badge">${cambioTexto}</span>
+      </div>
+      <div class="analysis-row">
+        <div>
+          <div class="analysis-key">Categoría principal</div>
+          <div class="analysis-value">${topCat}</div>
+        </div>
+        <div class="analysis-value">${participacionTop}%</div>
+      </div>
+      <div class="analysis-row">
+        <div>
+          <div class="analysis-key">Gastos fijos</div>
+          <div class="analysis-value">${fixedText}</div>
+        </div>
+      </div>
+      <div>
+        <div class="analysis-list-title">Top 3 gastos</div>
+        <div class="analysis-list">${topGastosHtml}</div>
+      </div>
+      <div class="analysis-note">Resumen breve para ver cómo está tu mes.</div>
+    </div>
+  `);
 }
 
 // ===== FIREBASE HELPERS =====
@@ -748,7 +935,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   if (user) {
-    entrarAlApp(user.displayName || 'Usuario', user.email);
+    entrarAlApp(user.displayName || 'Usuario', user.email, 'Cuenta Google activa');
     showToast('✅ Bienvenido ' + (user.displayName || '').split(' ')[0]);
   } else {
     ocultarTodosScreens();

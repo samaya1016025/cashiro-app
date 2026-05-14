@@ -172,6 +172,18 @@
         <button class="tab-btn" onclick="switchTab('tab-historial')">📋 Historial</button>
       </div>
       <div id="tab-grafica">
+        <div class="analysis-card">
+          <div class="analysis-header">
+            <div>
+              <p class="analysis-label">🔎 Resumen rápido</p>
+              <p class="analysis-sub">Dale cuando quieras ver cómo van tus gastos.</p>
+            </div>
+            <button class="btn-primary-compact" onclick="generarAnalisisMovimientos()">✨ Ver mi resumen</button>
+          </div>
+          <div id="analisis-result" class="analysis-result">
+            Dale al botón y mira tu resumen rápido de gastos.
+          </div>
+        </div>
         <div class="chart-card">
           <p class="chart-title">Gastos últimos 3 meses</p>
           <canvas id="myChart"></canvas>
@@ -194,11 +206,24 @@
     <div class="topbar"><span class="topbar-title">👤 Mi Perfil</span></div>
     <div class="form-container">
       <div class="perfil-avatar">
-        <div class="perfil-avatar-circle">
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="url(#gp)" stroke-width="1.8"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="url(#gp)" stroke-width="1.8" stroke-linecap="round"/><defs><linearGradient id="gp" x1="4" y1="12" x2="20" y2="12" gradientUnits="userSpaceOnUse"><stop stop-color="#00E38C"/><stop offset="1" stop-color="#3A86FF"/></linearGradient></defs></svg>
+        <label class="perfil-avatar-circle" for="profile-photo-input">
+          <img id="profile-photo" src="" alt="Foto de perfil" />
+          <div class="avatar-fallback">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="url(#gp)" stroke-width="1.8"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="url(#gp)" stroke-width="1.8" stroke-linecap="round"/><defs><linearGradient id="gp" x1="4" y1="12" x2="20" y2="12" gradientUnits="userSpaceOnUse"><stop stop-color="#00E38C"/><stop offset="1" stop-color="#3A86FF"/></linearGradient></defs></svg>
+          </div>
+          <div class="avatar-overlay">Cambiar foto</div>
+        </label>
+        <input id="profile-photo-input" type="file" accept="image/*" style="display:none" onchange="handleProfilePhoto(event)">
+        <div class="perfil-user-info">
+          <div class="perfil-nombre-row">
+            <input id="profile-name-input" class="perfil-name-input" type="text" placeholder="Tu nombre" disabled onchange="actualizarBotonPerfil()" oninput="actualizarBotonPerfil()" />
+            <button id="profile-btn-action" class="btn-small" type="button" onclick="toggleEditNombre()">Editar</button>
+          </div>
+          <div id="profile-confirmation" class="profile-feedback" aria-live="polite"></div>
+          <p class="perfil-nombre">Invitado</p>
+          <p class="perfil-email">Sin correo</p>
+          <p class="perfil-plan">Sin cuenta</p>
         </div>
-        <p class="perfil-nombre">Invitado</p>
-        <p class="perfil-plan">Sin cuenta</p>
       </div>
 
       <div class="perfil-card premium-card">
