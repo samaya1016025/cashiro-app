@@ -321,9 +321,9 @@ async function handleGoogleLogin() {
 
       if (hayLocales && !hayNube) {
         const promesas = [];
-        gastosInvitado.forEach(g    => promesas.push(guardarDato(user.uid, 'gastos',    g.id,                 g)));
-        ingresosInvitado.forEach(i  => promesas.push(guardarDato(user.uid, 'ingresos',  `${i.mes}_${i.anio}`, i)));
-        serviciosInvitado.forEach(s => promesas.push(guardarDato(user.uid, 'servicios', s.id,                 s)));
+        gastosInvitado.forEach(g    => promesas.push(guardarDato(user.uid, 'gastos',    g.id,     g)));
+        ingresosInvitado.forEach(i  => promesas.push(guardarDato(user.uid, 'ingresos',  i.id,     i)));
+        serviciosInvitado.forEach(s => promesas.push(guardarDato(user.uid, 'servicios', s.id,     s)));
         await Promise.all(promesas);
         showToast('☁️ Datos migrados a tu cuenta');
       } else if (hayNube) {
@@ -355,13 +355,15 @@ function guardarIngreso() {
   const mes   = parseInt(document.getElementById('ingreso-mes').value);
   const anio  = parseInt(document.getElementById('ingreso-anio').value);
   const monto = parseFloat(document.getElementById('ingreso-monto').value);
+  const desc  = document.getElementById('ingreso-desc')?.value.trim() || 'Ingreso';
   if (!monto || monto <= 0) { showToast('⚠️ Ingresa un monto válido'); return; }
   const ingresos = getData('ingresos');
-  const idx = ingresos.findIndex(i => i.mes === mes && i.anio === anio);
-  if (idx >= 0) ingresos[idx].monto = monto;
-  else ingresos.push({ mes, anio, monto });
+  const nuevo = { id: Date.now(), mes, anio, monto, desc, fecha: new Date().toISOString().split('T')[0] };
+  ingresos.push(nuevo);
   setData('ingresos', ingresos);
-  if (modoGoogle) guardarEnFirebase('ingresos', `${mes}_${anio}`, { mes, anio, monto });
+  if (modoGoogle) guardarEnFirebase('ingresos', nuevo.id, nuevo);
+  document.getElementById('ingreso-monto').value = '';
+  document.getElementById('ingreso-desc').value = '';
   showToast('✅ Ingreso guardado');
   showScreen('screen-dashboard');
 }
@@ -576,8 +578,8 @@ function renderDashboard() {
   const mes  = hoy.getMonth();
   const anio = hoy.getFullYear();
   const ingresos     = getData('ingresos');
-  const ingreso      = ingresos.find(i => i.mes === mes && i.anio === anio);
-  const totalIngreso = ingreso ? ingreso.monto : 0;
+  const ingresosMes  = ingresos.filter(i => i.mes === mes && i.anio === anio);
+  const totalIngreso = ingresosMes.reduce((a, i) => a + i.monto, 0);
   const gastos       = getData('gastos');
   const gastosMes    = obtenerGastosDeMes(gastos, mes, anio);
   const totalGastos  = gastosMes.reduce((a, g) => a + g.monto, 0);
