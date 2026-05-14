@@ -7,6 +7,10 @@ const MESES = [
 let currentUser = null;
 let modoGoogle  = false;
 let userId      = 'local';
+let isEditingName = false;
+let loadingSaveProfile = false;
+let profileNameDraft = '';
+let profileNameError = '';
 
 // ===== STORAGE =====
 function getData(key) {
@@ -22,51 +26,96 @@ function getProfileItem(key) {
 function setProfileItem(key, value) {
   localStorage.setItem(userId + '_perfil_' + key, value);
 }
-function renderPerfilUsuario(nombre = '', email = '', plan = '') {
-  const storedName = getProfileItem('nombre');
-  const currentName = document.querySelector('.perfil-nombre')?.textContent || 'Invitado';
+function getSavedProfileName() {
+  return getProfileItem('nombre');
+}
+function getCurrentProfileName(googleName = '') {
+  const saved = getSavedProfileName();
+  return saved || googleName || 'Invitado';
+}
+function renderPerfilUsuario(nombre = '', email = '') {
+  const savedName = getSavedProfileName();
   const currentEmail = document.querySelector('.perfil-email')?.textContent || 'Sin correo';
-  const currentPlan = document.querySelector('.perfil-plan')?.textContent || 'Sin cuenta';
-  const profileName = storedName || nombre || currentName;
+  const profileName = getCurrentProfileName(nombre);
   const profileEmail = email || currentEmail;
   const profilePhoto = getProfileItem('foto') || '';
-  const nombreEl = document.querySelector('.perfil-nombre');
+  const nombreEl = document.querySelector('.perfil-user-name');
   const emailEl = document.querySelector('.perfil-email');
-  const planEl = document.querySelector('.perfil-plan');
   const photoEl = document.getElementById('profile-photo');
+  const nameDisplay = document.getElementById('profile-name-view');
+  const nameEdit = document.getElementById('profile-name-edit');
   const nameInput = document.getElementById('profile-name-input');
-  const fallback = document.querySelector('.avatar-fallback');
+  const nameError = document.getElementById('profile-error');
+  const saveBtn = document.getElementById('btn-save-profile');
   if (nombreEl) nombreEl.textContent = profileName;
   if (emailEl) emailEl.textContent = profileEmail;
-  if (planEl) planEl.textContent = plan || currentPlan;
-  if (nameInput) nameInput.value = profileName;
   if (photoEl) photoEl.src = profilePhoto;
+  if (nameInput) {
+    nameInput.value = isEditingName ? profileNameDraft || profileName : profileName;
+    nameInput.disabled = !isEditingName;
+    nameInput.setAttribute('aria-invalid', profileNameError ? 'true' : 'false');
+  }
+  if (nameError) nameError.textContent = profileNameError;
+  if (nameDisplay) nameDisplay.style.display = isEditingName ? 'none' : 'flex';
+  if (nameEdit) nameEdit.style.display = isEditingName ? 'flex' : 'none';
+  if (saveBtn) {
+    saveBtn.disabled = loadingSaveProfile;
+    saveBtn.textContent = loadingSaveProfile ? 'Guardando...' : 'Guardar';
+  }
+  const fallback = document.querySelector('.avatar-fallback');
   if (fallback) fallback.style.display = profilePhoto ? 'none' : 'flex';
 }
-function toggleEditNombre() {
-  const btn = document.getElementById('profile-btn-action');
-  const input = document.getElementById('profile-name-input');
-  if (!btn || !input) return;
-  const accion = btn.textContent.toLowerCase();
-  if (accion.includes('editar')) {
-    input.disabled = false;
-    input.focus();
-    input.select();
-  } else if (accion.includes('guardar')) {
-    guardarNombrePerfil();
-    input.disabled = true;
-  }
+function startEditNombre() {
+  isEditingName = true;
+  profileNameDraft = getSavedProfileName() || document.querySelector('.perfil-user-name')?.textContent || '';
+  profileNameError = '';
+  renderPerfilUsuario();
+  setTimeout(() => {
+    const input = document.getElementById('profile-name-input');
+    if (input) {
+      input.focus();
+      input.select();
+    }
+  }, 50);
 }
-function actualizarBotonPerfil() {
-  const nombreInput = document.getElementById('profile-name-input');
-  const btn = document.getElementById('profile-btn-action');
-  if (!nombreInput || !btn) return;
-  const nombreActual = nombreInput.value.trim();
-  const nombreGuardado = getProfileItem('nombre');
-  const esIgual = nombreActual === nombreGuardado;
-  btn.textContent = esIgual ? 'Editar' : 'Guardar';
-  btn.classList.toggle('disabled', esIgual);
-  btn.disabled = esIgual;
+function cancelEditNombre() {
+  isEditingName = false;
+  profileNameDraft = '';
+  profileNameError = '';
+  renderPerfilUsuario();
+}
+function updateProfileDraft(event) {
+  profileNameDraft = event.target.value;
+  profileNameError = '';
+  renderPerfilUsuario();
+}
+function validateProfileName(name) {
+  const trimmed = name.trim();
+  if (trimmed.length < 3) return 'El nombre debe tener al menos 3 caracteres';
+  if (trimmed.length > 25) return 'Máximo 25 caracteres';
+  if (!/^[a-zA-Z0-9_ ]+$/.test(trimmed)) return 'Solo letras, números, espacios y guion bajo';
+  return '';
+}
+function saveNombrePerfil() {
+  if (loadingSaveProfile) return;
+  const parsedName = profileNameDraft.trim();
+  const error = validateProfileName(parsedName);
+  if (error) {
+    profileNameError = error;
+    renderPerfilUsuario();
+    return;
+  }
+  loadingSaveProfile = true;
+  profileNameError = '';
+  renderPerfilUsuario();
+  setTimeout(() => {
+    setProfileItem('nombre', parsedName);
+    profileNameDraft = parsedName;
+    isEditingName = false;
+    loadingSaveProfile = false;
+    renderPerfilUsuario();
+    showToast('✅ Nombre actualizado');
+  }, 300);
 }
 function handleProfilePhoto(event) {
   const file = event.target.files && event.target.files[0];
@@ -81,21 +130,6 @@ function handleProfilePhoto(event) {
     }
   };
   reader.readAsDataURL(file);
-}
-function guardarNombrePerfil() {
-  const nombreInput = document.getElementById('profile-name-input');
-  if (!nombreInput) return;
-  const nombre = nombreInput.value.trim();
-  if (!nombre) {
-    showProfileFeedback('⚠️ Ingresa tu nombre', true);
-    showToast('⚠️ Ingresa tu nombre');
-    return;
-  }
-  setProfileItem('nombre', nombre);
-  renderPerfilUsuario();
-  actualizarBotonPerfil();
-  nombreInput.disabled = true;
-  showToast('✅ Nombre actualizado');
 }
 function showProfileFeedback(message, isError = false) {
   const feedback = document.getElementById('profile-confirmation');
@@ -236,6 +270,31 @@ function logout() {
     bienvenida.classList.add('active');
     bienvenida.style.display = 'block';
   }
+}
+
+function confirmLogout() {
+  const modal = document.getElementById('modal-logout');
+  if (!modal) return;
+  modal.style.display = 'flex';
+  modal.style.visibility = 'visible';
+  modal.style.pointerEvents = 'all';
+  setTimeout(() => modal.classList.add('open'), 10);
+}
+
+function closeLogoutModal() {
+  const modal = document.getElementById('modal-logout');
+  if (!modal) return;
+  modal.classList.remove('open');
+  setTimeout(() => {
+    modal.style.display = 'none';
+    modal.style.visibility = 'hidden';
+    modal.style.pointerEvents = 'none';
+  }, 220);
+}
+
+function logoutConfirmed() {
+  closeLogoutModal();
+  logout();
 }
 
 // ===== GOOGLE AUTH =====
@@ -890,6 +949,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     modalEl.style.pointerEvents = 'none';
     modalEl.addEventListener('click', function(e) {
       if (e.target === this) cerrarModal();
+    });
+  }
+
+  const logoutModal = document.getElementById('modal-logout');
+  if (logoutModal) {
+    logoutModal.style.display       = 'none';
+    logoutModal.style.visibility    = 'hidden';
+    logoutModal.style.pointerEvents = 'none';
+    logoutModal.addEventListener('click', function(e) {
+      if (e.target === this) closeLogoutModal();
     });
   }
 

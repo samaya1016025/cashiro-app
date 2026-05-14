@@ -176,7 +176,6 @@
           <div class="analysis-header">
             <div>
               <p class="analysis-label">🔎 Resumen rápido</p>
-              <p class="analysis-sub">Dale cuando quieras ver cómo van tus gastos.</p>
             </div>
             <button class="btn-primary-compact" onclick="generarAnalisisMovimientos()">✨ Ver mi resumen</button>
           </div>
@@ -207,28 +206,44 @@
     <div class="form-container">
       <div class="perfil-avatar">
         <label class="perfil-avatar-circle" for="profile-photo-input">
+          <div class="avatar-border"></div>
           <img id="profile-photo" src="" alt="Foto de perfil" />
           <div class="avatar-fallback">
             <svg width="40" height="40" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="url(#gp)" stroke-width="1.8"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="url(#gp)" stroke-width="1.8" stroke-linecap="round"/><defs><linearGradient id="gp" x1="4" y1="12" x2="20" y2="12" gradientUnits="userSpaceOnUse"><stop stop-color="#00E38C"/><stop offset="1" stop-color="#3A86FF"/></linearGradient></defs></svg>
+          </div>
+          <div class="avatar-camera">
+            <span>📷</span>
           </div>
           <div class="avatar-overlay">Cambiar foto</div>
         </label>
         <input id="profile-photo-input" type="file" accept="image/*" style="display:none" onchange="handleProfilePhoto(event)">
         <div class="perfil-user-info">
-          <div class="perfil-nombre-row">
-            <input id="profile-name-input" class="perfil-name-input" type="text" placeholder="Tu nombre" disabled onchange="actualizarBotonPerfil()" oninput="actualizarBotonPerfil()" />
-            <button id="profile-btn-action" class="btn-small" type="button" onclick="toggleEditNombre()">Editar</button>
+          <div class="perfil-name-block">
+            <div class="perfil-name-view" id="profile-name-view">
+              <span class="perfil-user-name">Invitado</span>
+              <button class="btn-icon-edit" type="button" onclick="startEditNombre()">✏️</button>
+            </div>
+            <div class="perfil-name-edit" id="profile-name-edit">
+              <input id="profile-name-input" class="perfil-name-input" type="text" placeholder="Tu nombre" oninput="updateProfileDraft(event)" />
+              <p id="profile-error" class="perfil-error"></p>
+              <div class="perfil-edit-actions">
+                <button id="btn-save-profile" class="btn-primary btn-small" type="button" onclick="saveNombrePerfil()">Guardar</button>
+                <button class="btn-secondary btn-small" type="button" onclick="cancelEditNombre()">Cancelar</button>
+              </div>
+            </div>
           </div>
-          <div id="profile-confirmation" class="profile-feedback" aria-live="polite"></div>
-          <p class="perfil-nombre">Invitado</p>
           <p class="perfil-email">Sin correo</p>
-          <p class="perfil-plan">Sin cuenta</p>
         </div>
       </div>
 
       <div class="perfil-card premium-card">
-        <p class="perfil-card-title">🚀 Cashiro Premium</p>
-        <p class="perfil-card-sub">Desbloquea todo el potencial</p>
+        <div class="premium-header">
+          <div>
+            <p class="perfil-card-title">🚀 Cashiro Premium</p>
+            <p class="perfil-card-sub">Eleva tu control financiero con estilo.</p>
+          </div>
+          <span class="premium-badge">Próximamente</span>
+        </div>
         <ul class="premium-lista">
           <li>✅ Historial ilimitado</li>
           <li>✅ Gráficas avanzadas</li>
@@ -236,7 +251,7 @@
           <li>✅ Múltiples usuarios</li>
           <li>✅ Recordatorios inteligentes</li>
         </ul>
-        <button class="btn-premium">Próximamente — $9.900/mes</button>
+        <button class="btn-premium">Ver detalles</button>
       </div>
 
       <div id="btn-conectar-google" style="display:none">
@@ -250,7 +265,17 @@
         </div>
       </div>
 
-      <button class="btn-danger-outline" id="btn-cerrar-sesion" style="display:none" onclick="logout()">🚪 Cerrar sesión</button>
+      <button class="btn-danger-outline" id="btn-cerrar-sesion" style="display:none" onclick="confirmLogout()">🚪 Cerrar sesión</button>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modal-logout">
+    <div class="modal-box modal-small">
+      <p class="modal-title">¿Seguro que deseas cerrar sesión?</p>
+      <div class="modal-actions">
+        <button class="btn-secondary btn-cancelar" type="button" onclick="closeLogoutModal()">Cancelar</button>
+        <button class="btn-danger-outline" type="button" onclick="logoutConfirmed()">Cerrar sesión</button>
+      </div>
     </div>
   </div>
 
