@@ -790,14 +790,15 @@ body {
   padding: 10px 14px;
   border-radius: 14px;
   border: none;
-  background: var(--primary);
-  color: white;
+  background: linear-gradient(90deg, #00E38C, #3A86FF);
+  color: #0B0F1A;
   font-weight: 700;
   cursor: pointer;
-  transition: opacity 0.2s ease;
+  transition: opacity 0.2s, transform 0.1s;
 }
 .btn-small:active {
   opacity: 0.85;
+  transform: scale(0.98);
 }
 .btn-small.disabled {
   opacity: 0.5;
@@ -818,15 +819,6 @@ body {
 }
 .profile-feedback.visible {
   display: block;
-}
-.btn-small {
-  padding: 10px 14px;
-  border-radius: 14px;
-  border: none;
-  background: var(--primary);
-  color: white;
-  font-weight: 700;
-  cursor: pointer;
 }
 .perfil-nombre { font-size: 20px; font-weight: 800; margin: 0; }
 .perfil-email { font-size: 13px; color: var(--text-muted); margin: 0; }
