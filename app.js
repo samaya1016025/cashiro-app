@@ -352,19 +352,36 @@ function poblarSelectMes() {
 }
 
 function guardarIngreso() {
-  const mes   = parseInt(document.getElementById('ingreso-mes').value);
-  const anio  = parseInt(document.getElementById('ingreso-anio').value);
-  const monto = parseFloat(document.getElementById('ingreso-monto').value);
-  const desc  = document.getElementById('ingreso-desc')?.value.trim() || 'Ingreso';
+  const mesEl = document.getElementById('ingreso-mes');
+  const anioEl = document.getElementById('ingreso-anio');
+  const montoEl = document.getElementById('ingreso-monto');
+  const descEl = document.getElementById('ingreso-desc');
+  
+  if (!mesEl || !anioEl || !montoEl) { 
+    showToast('⚠️ Error: campos faltantes'); 
+    return; 
+  }
+  
+  const mes = parseInt(mesEl.value);
+  const anio = parseInt(anioEl.value);
+  const monto = parseFloat(montoEl.value);
+  const desc = (descEl?.value || '').trim() || 'Ingreso';
+  
+  if (!mes && mes !== 0) { showToast('⚠️ Selecciona un mes'); return; }
+  if (!anio || anio < 2000 || anio > 2100) { showToast('⚠️ Año inválido'); return; }
   if (!monto || monto <= 0) { showToast('⚠️ Ingresa un monto válido'); return; }
+  
   const ingresos = getData('ingresos');
-  const nuevo = { id: Date.now(), mes, anio, monto, desc, fecha: new Date().toISOString().split('T')[0] };
+  const nuevo = { id: Date.now(), mes, anio, monto, desc };
   ingresos.push(nuevo);
   setData('ingresos', ingresos);
+  
   if (modoGoogle) guardarEnFirebase('ingresos', nuevo.id, nuevo);
-  document.getElementById('ingreso-monto').value = '';
-  document.getElementById('ingreso-desc').value = '';
+  
+  montoEl.value = '';
+  if (descEl) descEl.value = '';
   showToast('✅ Ingreso guardado');
+  renderDashboard();
   showScreen('screen-dashboard');
 }
 
