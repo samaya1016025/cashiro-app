@@ -80,11 +80,24 @@ function showToast(msg) {
 
 // ===== ENTRADA =====
 function entrarAlApp(nombre, detalle) {
-  ocultarTodosScreens();
+  // Ocultar todo primero
+  document.querySelectorAll('.screen').forEach(s => {
+    s.classList.remove('active');
+    s.style.display = 'none';
+  });
+
+  // Mostrar nav
   const nav = document.getElementById('bottom-nav-global');
   if (nav) nav.style.display = 'flex';
-  showScreen('screen-dashboard');
 
+  // Mostrar dashboard
+  const dashboard = document.getElementById('screen-dashboard');
+  if (dashboard) {
+    dashboard.classList.add('active');
+    dashboard.style.display = 'block';
+  }
+
+  // Actualizar perfil
   const nombreEl = document.querySelector('.perfil-nombre');
   const planEl   = document.querySelector('.perfil-plan');
   if (nombreEl) nombreEl.textContent = nombre;
@@ -98,6 +111,8 @@ function entrarAlApp(nombre, detalle) {
   if (btnSalir)  btnSalir.style.display  = !esInvitado ? 'block' : 'none';
   if (cardPass)  cardPass.style.display  = !esInvitado ? 'block' : 'none';
 
+  actualizarNav('nav-inicio');
+  renderDashboard();
   window.scrollTo(0, 0);
 }
 
