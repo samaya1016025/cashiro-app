@@ -413,7 +413,7 @@ function guardarIngreso() {
   ingresos.push(nuevo);
   setData('ingresos', ingresos);
   
-  if (modoGoogle) guardarEnFirebase('ingresos', `${mes}_${anio}`, nuevo);
+  if (modoGoogle) guardarEnFirebase('ingresos', nuevo.id, nuevo);
   
   montoEl.value = '';
   if (descEl) descEl.value = '';
@@ -1019,36 +1019,37 @@ function generarAnalisisMovimientos() {
     ? `$${formatNum(gastosFijos)}`
     : 'Sin gastos fijos activos';
 
+ const badgeClass = cambio > 0 ? 'analysis-badge negativo' : 'analysis-badge';
   setAnalisisText(`
     <div class="analysis-summary">
       <div class="analysis-row">
-        <div>
-          <div class="analysis-key">Total del mes</div>
-          <div class="analysis-value">$${formatNum(totalActual)}</div>
+        <div class="analysis-row-header">
+          <div>
+            <div class="analysis-key">Total gastado este mes</div>
+            <div class="analysis-value">$${formatNum(totalActual)}</div>
+          </div>
+          <span class="${badgeClass}">${cambioTexto}</span>
         </div>
-        <span class="analysis-badge">${cambioTexto}</span>
       </div>
       <div class="analysis-row">
-        <div>
-          <div class="analysis-key">Categoría principal</div>
+        <div class="analysis-key">Categoría principal</div>
+        <div class="analysis-row-header">
           <div class="analysis-value">${topCat}</div>
+          <span class="analysis-badge">${participacionTop}% del total</span>
         </div>
-        <div class="analysis-value">${participacionTop}%</div>
       </div>
       <div class="analysis-row">
-        <div>
-          <div class="analysis-key">Gastos fijos</div>
-          <div class="analysis-value">${fixedText}</div>
-        </div>
+        <div class="analysis-key">Gastos fijos del mes</div>
+        <div class="analysis-value">${fixedText}</div>
       </div>
-      <div>
-        <div class="analysis-list-title">Top 3 gastos</div>
+      <div class="analysis-row">
+        <div class="analysis-list-title">🏆 Top 3 gastos</div>
         <div class="analysis-list">${topGastosHtml}</div>
       </div>
-      <div class="analysis-note">Resumen breve para ver cómo está tu mes.</div>
+      <div class="analysis-note">📊 Resumen de ${MESES[mes]} ${anio}</div>
     </div>
   `);
-}
+  }
 
 // ===== FIREBASE HELPERS =====
 async function guardarEnFirebase(coleccion, id, data) {
@@ -1125,9 +1126,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   // Verificar sesión activa
-  let user = null;
+let user = null;
   try {
-    user = await getCurrentUser();
+    user = await Promise.race([
+      getCurrentUser(),
+      new Promise(resolve => setTimeout(() => resolve(null), 5000))
+    ]);
     if (user) {
       currentUser = user;
       modoGoogle  = true;
@@ -1163,6 +1167,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/cashiroapp/sw.js').catch(() => {});
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
   }
 });
