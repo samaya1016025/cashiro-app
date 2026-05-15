@@ -413,7 +413,7 @@ function guardarIngreso() {
   ingresos.push(nuevo);
   setData('ingresos', ingresos);
   
-  if (modoGoogle) guardarEnFirebase('ingresos', nuevo.id, nuevo);
+  if (modoGoogle) guardarEnFirebase('ingresos', `${mes}_${anio}`, nuevo);
   
   montoEl.value = '';
   if (descEl) descEl.value = '';
@@ -577,35 +577,33 @@ function eliminarGasto() {
   const id = document.getElementById('edit-id').value;
   if (!confirm('¿Seguro que quieres eliminar este movimiento?')) return;
 
-  let eliminado = false;
   if (movType === 'ingreso') {
-    const ingresos = cargarIngresos().filter(i => String(i.id) !== String(id));
-    setData('ingresos', ingresos);
-    if (modoGoogle) eliminarDeFirebase('ingresos', parseInt(id, 10));
+    const ingresos = cargarIngresos();
+    const ingresoAEliminar = ingresos.find(i => String(i.id) === String(id));
+    const nuevosIngresos = ingresos.filter(i => String(i.id) !== String(id));
+    setData('ingresos', nuevosIngresos);
+
+    if (modoGoogle && currentUser && ingresoAEliminar) {
+      // Intentar eliminar con ambos formatos de ID
+      const idNumerico = String(ingresoAEliminar.id);
+      const idMesAnio  = `${ingresoAEliminar.mes}_${ingresoAEliminar.anio}`;
+      Promise.all([
+        eliminarDato(currentUser.uid, 'ingresos', idNumerico),
+        eliminarDato(currentUser.uid, 'ingresos', idMesAnio)
+      ]).then(() => console.log('Ingreso eliminado de Firebase'))
+        .catch(e => console.error('Error Firebase:', e));
+    }
     showToast('🗑️ Ingreso eliminado');
-    eliminado = true;
+
   } else {
-    const gastos = getData('gastos').filter(g => String(g.id) !== String(id));
-    if (gastos.length < getData('gastos').length) {
-      setData('gastos', gastos);
-      if (modoGoogle) eliminarDeFirebase('gastos', parseInt(id, 10));
-      showToast('🗑️ Gasto eliminado');
-      eliminado = true;
+    const gastos = getData('gastos');
+    const nuevosGastos = gastos.filter(g => String(g.id) !== String(id));
+    setData('gastos', nuevosGastos);
+    if (modoGoogle && currentUser) {
+      eliminarDato(currentUser.uid, 'gastos', String(id))
+        .catch(e => console.error('Error Firebase:', e));
     }
-  }
-
-  if (!eliminado) {
-    const ingresos = cargarIngresos().filter(i => String(i.id) !== String(id));
-    if (ingresos.length < cargarIngresos().length) {
-      setData('ingresos', ingresos);
-      if (modoGoogle) eliminarDeFirebase('ingresos', parseInt(id, 10));
-      showToast('🗑️ Ingreso eliminado');
-      eliminado = true;
-    }
-  }
-
-  if (!eliminado) {
-    showToast('⚠️ No se encontró el movimiento para eliminar');
+    showToast('🗑️ Gasto eliminado');
   }
 
   cerrarModal();
@@ -1134,14 +1132,14 @@ document.addEventListener('DOMContentLoaded', async () => {
       currentUser = user;
       modoGoogle  = true;
       userId      = user.uid;
-      const [gastosNube, ingresosNube, serviciosNube] = await Promise.all([
+        const [gastosNube, ingresosNube, serviciosNube] = await Promise.all([
         obtenerColeccion(user.uid, 'gastos'),
         obtenerColeccion(user.uid, 'ingresos'),
         obtenerColeccion(user.uid, 'servicios')
       ]);
-      if (gastosNube.length)    setData('gastos',    gastosNube);
-      if (ingresosNube.length)  setData('ingresos',  ingresosNube);
-      if (serviciosNube.length) setData('servicios', serviciosNube);
+      setData('gastos',    gastosNube);
+      setData('ingresos',  ingresosNube.map(normalizeIngreso));
+      setData('servicios', serviciosNube);
     }
   } catch(e) {
     console.error('Error auth:', e);
