@@ -450,6 +450,7 @@ body {
 .gasto-desc        { font-size: 15px; font-weight: 600; }
 .gasto-fecha-small { font-size: 11px; color: var(--text-muted); }
 .gasto-monto-neg   { font-size: 16px; font-weight: 800; color: var(--danger); }
+.gasto-monto-pos   { font-size: 16px; font-weight: 800; color: #00E38C; }
 .edit-hint         { font-size: 11px; color: var(--text-muted); text-align: center; padding: 8px 0 0; }
 
 /* ===== FORM CONTAINER ===== */
@@ -801,7 +802,7 @@ body {
 .perfil-name-block {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
   width: 100%;
 }
 .perfil-name-view {
@@ -845,7 +846,9 @@ body {
   gap: 12px;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.3s ease;
+  max-height: 0;
+  overflow: hidden;
+  transition: opacity 0.3s ease, max-height 0.3s ease;
 }
 .perfil-name-edit input {
   width: 100%;
@@ -853,6 +856,7 @@ body {
 .perfil-name-edit.active {
   opacity: 1;
   pointer-events: auto;
+  max-height: 320px;
 }
 .perfil-edit-actions {
   display: flex;

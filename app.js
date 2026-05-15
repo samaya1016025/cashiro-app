@@ -373,7 +373,8 @@ function guardarIngreso() {
   if (!monto || monto <= 0) { showToast('⚠️ Ingresa un monto válido'); return; }
   
   const ingresos = getData('ingresos');
-  const nuevo = { id: Date.now(), mes, anio, monto, desc };
+  const fecha = new Date().toISOString().split('T')[0];
+  const nuevo = { id: Date.now(), mes, anio, monto, desc, fecha, tipo: 'ingreso' };
   ingresos.push(nuevo);
   setData('ingresos', ingresos);
   
@@ -444,59 +445,114 @@ function cerrarModal() {
   }, 300);
 }
 
-function abrirModal(id) {
-  const gastos = getData('gastos');
-  const g = gastos.find(g => g.id === id);
-  if (!g) return;
-  document.getElementById('edit-id').value        = g.id;
-  document.getElementById('edit-desc').value      = g.desc;
-  document.getElementById('edit-monto').value     = g.monto;
-  document.getElementById('edit-fecha').value     = g.fecha || '';
-  document.getElementById('edit-categoria').value = g.cat;
-  document.getElementById('edit-tipo').value      = g.tipo || 'variable';
-  document.getElementById('edit-fecha-fin').value = g.fechaFin || '';
-  const esFijo = g.tipo === 'fijo';
-  document.getElementById('edit-grupo-fecha-fin').style.display = esFijo ? 'block' : 'none';
-  document.getElementById('edit-estado-fijo').style.display     = esFijo ? 'block' : 'none';
-  const btn    = document.getElementById('btn-toggle-activo');
-  const activo = g.activo !== false;
-  btn.textContent = activo ? '⏸️ Desactivar este gasto fijo' : '▶️ Reactivar este gasto fijo';
-  btn.className   = activo ? 'btn-toggle-fijo' : 'btn-toggle-fijo reactivar';
+function abrirModal(id, movType = 'gasto') {
+  const modal = document.getElementById('modal-editar');
+  const title = modal.querySelector('.modal-title');
+  const movInput = document.getElementById('edit-movtype');
+  const catGroup = document.getElementById('edit-categoria-group');
+  const tipoGroup = document.getElementById('edit-tipo-group');
+  const fechaFinGroup = document.getElementById('edit-grupo-fecha-fin');
+  const estadoFijo = document.getElementById('edit-estado-fijo');
+  const btn = document.getElementById('btn-toggle-activo');
+
+  movInput.value = movType;
+  if (movType === 'ingreso') {
+    const ingresos = getData('ingresos');
+    const i = ingresos.find(item => item.id === id);
+    if (!i) return;
+    title.textContent = '✏️ Editar Ingreso';
+    document.getElementById('edit-id').value = i.id;
+    document.getElementById('edit-desc').value = i.desc;
+    document.getElementById('edit-monto').value = i.monto;
+    document.getElementById('edit-fecha').value = i.fecha || '';
+    if (catGroup) catGroup.style.display = 'none';
+    if (tipoGroup) tipoGroup.style.display = 'none';
+    if (fechaFinGroup) fechaFinGroup.style.display = 'none';
+    if (estadoFijo) estadoFijo.style.display = 'none';
+    btn.style.display = 'none';
+  } else {
+    const gastos = getData('gastos');
+    const g = gastos.find(item => item.id === id);
+    if (!g) return;
+    title.textContent = '✏️ Editar Gasto';
+    document.getElementById('edit-id').value = g.id;
+    document.getElementById('edit-desc').value = g.desc;
+    document.getElementById('edit-monto').value = g.monto;
+    document.getElementById('edit-fecha').value = g.fecha || '';
+    document.getElementById('edit-categoria').value = g.cat;
+    document.getElementById('edit-tipo').value = g.tipo || 'variable';
+    document.getElementById('edit-fecha-fin').value = g.fechaFin || '';
+    const esFijo = g.tipo === 'fijo';
+    if (catGroup) catGroup.style.display = 'block';
+    if (tipoGroup) tipoGroup.style.display = 'block';
+    if (fechaFinGroup) fechaFinGroup.style.display = esFijo ? 'block' : 'none';
+    if (estadoFijo) estadoFijo.style.display = esFijo ? 'block' : 'none';
+    btn.style.display = 'inline-flex';
+    btn.textContent = g.activo !== false ? '⏸️ Desactivar este gasto fijo' : '▶️ Reactivar este gasto fijo';
+    btn.className = g.activo !== false ? 'btn-toggle-fijo' : 'btn-toggle-fijo reactivar';
+  }
   abrirModalReal();
 }
 
 function guardarEdicion() {
+  const movType = document.getElementById('edit-movtype').value || 'gasto';
   const id       = parseInt(document.getElementById('edit-id').value);
-  const cat      = document.getElementById('edit-categoria').value;
   const desc     = document.getElementById('edit-desc').value.trim();
   const monto    = parseFloat(document.getElementById('edit-monto').value);
   const fecha    = document.getElementById('edit-fecha').value;
-  const tipo     = document.getElementById('edit-tipo').value;
-  const fechaFin = tipo === 'fijo' ? document.getElementById('edit-fecha-fin').value : null;
   if (!desc)                { showToast('⚠️ Escribe una descripción'); return; }
   if (!monto || monto <= 0) { showToast('⚠️ Monto inválido'); return; }
-  const gastos = getData('gastos');
-  const idx    = gastos.findIndex(g => g.id === id);
-  if (idx >= 0) {
-    const activo = gastos[idx].activo !== false;
-    gastos[idx]  = { id, cat, desc, monto, fecha, tipo, fechaFin, activo };
-    if (modoGoogle) guardarEnFirebase('gastos', id, gastos[idx]);
+
+  if (movType === 'ingreso') {
+    const ingresos = getData('ingresos');
+    const idx = ingresos.findIndex(i => i.id === id);
+    if (idx >= 0) {
+      const date = fecha || ingresos[idx].fecha;
+      const d = new Date(date + 'T00:00:00');
+      const mes = !Number.isNaN(d.getMonth()) ? d.getMonth() : ingresos[idx].mes;
+      const anio = !Number.isNaN(d.getFullYear()) ? d.getFullYear() : ingresos[idx].anio;
+      ingresos[idx] = { id, desc, monto, fecha: date, mes, anio, tipo: 'ingreso' };
+      if (modoGoogle) guardarEnFirebase('ingresos', id, ingresos[idx]);
+    }
+    setData('ingresos', ingresos);
+    cerrarModal();
+    showToast('✅ Ingreso actualizado');
+  } else {
+    const cat      = document.getElementById('edit-categoria').value;
+    const tipo     = document.getElementById('edit-tipo').value;
+    const fechaFin = tipo === 'fijo' ? document.getElementById('edit-fecha-fin').value : null;
+    const gastos = getData('gastos');
+    const idx    = gastos.findIndex(g => g.id === id);
+    if (idx >= 0) {
+      const activo = gastos[idx].activo !== false;
+      gastos[idx]  = { id, cat, desc, monto, fecha, tipo, fechaFin, activo };
+      if (modoGoogle) guardarEnFirebase('gastos', id, gastos[idx]);
+    }
+    setData('gastos', gastos);
+    cerrarModal();
+    showToast('✅ Gasto actualizado');
   }
-  setData('gastos', gastos);
-  cerrarModal();
-  showToast('✅ Gasto actualizado');
+
   renderDashboard();
   renderHistorial();
 }
 
 function eliminarGasto() {
+  const movType = document.getElementById('edit-movtype').value || 'gasto';
   const id = parseInt(document.getElementById('edit-id').value);
-  if (!confirm('¿Seguro que quieres eliminar este gasto?')) return;
-  const gastos = getData('gastos').filter(g => g.id !== id);
-  setData('gastos', gastos);
-  if (modoGoogle) eliminarDeFirebase('gastos', id);
+  if (!confirm('¿Seguro que quieres eliminar este movimiento?')) return;
+  if (movType === 'ingreso') {
+    const ingresos = getData('ingresos').filter(i => i.id !== id);
+    setData('ingresos', ingresos);
+    if (modoGoogle) eliminarDeFirebase('ingresos', id);
+    showToast('🗑️ Ingreso eliminado');
+  } else {
+    const gastos = getData('gastos').filter(g => g.id !== id);
+    setData('gastos', gastos);
+    if (modoGoogle) eliminarDeFirebase('gastos', id);
+    showToast('🗑️ Gasto eliminado');
+  }
   cerrarModal();
-  showToast('🗑️ Gasto eliminado');
   renderDashboard();
   renderHistorial();
 }
@@ -627,22 +683,26 @@ function renderDashboard() {
 
   renderVencimientos(hoy);
 
-  const recientes = [...gastos]
+  const movimientos = [
+    ...gastos.map(g => ({ ...g, movType: 'gasto', fecha: g.fecha })),
+    ...ingresos.map(i => ({ ...i, movType: 'ingreso', fecha: i.fecha || `${i.anio}-${String(i.mes + 1).padStart(2, '0')}-01` }))
+  ]
+    .filter(m => m.fecha)
     .sort((a, b) => new Date(b.fecha) - new Date(a.fecha))
     .slice(0, 5);
 
   const listaG = document.getElementById('lista-gastos-recientes');
-  listaG.innerHTML = recientes.length === 0
+  listaG.innerHTML = movimientos.length === 0
     ? '<p style="color:var(--text-muted);text-align:center;padding:20px">Sin movimientos registrados</p>'
-    : recientes.map(g => `
-        <div class="gasto-item" onclick="abrirModal(${g.id})">
+    : movimientos.map(m => `
+        <div class="gasto-item" onclick="abrirModal(${m.id}, '${m.movType}')">
           <div class="gasto-info">
-            <span class="gasto-cat">${g.cat}${g.tipo==='fijo'?'<span class="badge-fijo">FIJO</span>':''}</span>
-            <span class="gasto-desc">${g.desc}</span>
-            <span class="gasto-fecha-small">${formatFecha(g.fecha)}</span>
+            <span class="gasto-cat">${m.movType === 'ingreso' ? 'Ingreso' : m.cat}${m.tipo === 'fijo' ? '<span class="badge-fijo">FIJO</span>' : ''}</span>
+            <span class="gasto-desc">${m.desc}</span>
+            <span class="gasto-fecha-small">${formatFecha(m.fecha)}</span>
           </div>
-          <span class="gasto-monto-neg">-$${formatNum(g.monto)}</span>
-        </div>`).join('') + '<p class="edit-hint">Toca cualquier gasto para editar ✏️</p>';
+          <span class="${m.movType === 'ingreso' ? 'gasto-monto-pos' : 'gasto-monto-neg'}">${m.movType === 'ingreso' ? '+' : '-'}$${formatNum(m.monto)}</span>
+        </div>`).join('') + '<p class="edit-hint">Toca cualquier movimiento para editar ✏️</p>';
 }
 
 function renderVencimientos(hoy) {
@@ -678,8 +738,9 @@ function renderHistorial() {
   const container = document.getElementById('historial-meses');
   if (!container) return;
   const gastos = getData('gastos');
-  if (gastos.length === 0) {
-    container.innerHTML = '<p style="color:var(--text-muted);text-align:center;padding:30px">Sin gastos registrados aún</p>';
+  const ingresos = getData('ingresos');
+  if (gastos.length === 0 && ingresos.length === 0) {
+    container.innerHTML = '<p style="color:var(--text-muted);text-align:center;padding:30px">Sin movimientos registrados aún</p>';
     renderGraficas();
     return;
   }
@@ -688,43 +749,55 @@ function renderHistorial() {
     const d = new Date(g.fecha + 'T00:00:00');
     mesesSet.add(`${d.getFullYear()}-${d.getMonth()}`);
   });
+  ingresos.forEach(i => {
+    if (i.fecha) {
+      const d = new Date(i.fecha + 'T00:00:00');
+      mesesSet.add(`${d.getFullYear()}-${d.getMonth()}`);
+    } else {
+      mesesSet.add(`${i.anio}-${i.mes}`);
+    }
+  });
   const mesesOrdenados = [...mesesSet]
     .map(k => { const [a, m] = k.split('-'); return { anio: +a, mes: +m }; })
     .sort((a, b) => b.anio - a.anio || b.mes - a.mes);
   let html = '';
   mesesOrdenados.forEach(({ mes, anio }, i) => {
-    const del_mes = obtenerGastosDeMes(gastos, mes, anio)
-      .sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
-    const total  = del_mes.reduce((s, g) => s + g.monto, 0);
+    const movs = [
+      ...obtenerGastosDeMes(gastos, mes, anio).map(g => ({ ...g, movType: 'gasto' })),
+      ...ingresos.filter(j => j.mes === mes && j.anio === anio).map(j => ({ ...j, movType: 'ingreso' }))
+    ].sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+    const totalGastos = movs.filter(m => m.movType === 'gasto').reduce((s, m) => s + m.monto, 0);
+    const totalIngresos = movs.filter(m => m.movType === 'ingreso').reduce((s, m) => s + m.monto, 0);
+    const total = totalIngresos - totalGastos;
     const porCat = {};
-    del_mes.forEach(g => { porCat[g.cat] = (porCat[g.cat] || 0) + g.monto; });
+    movs.filter(m => m.movType === 'gasto').forEach(g => { porCat[g.cat] = (porCat[g.cat] || 0) + g.monto; });
     const catHtml = Object.entries(porCat).sort((a,b) => b[1]-a[1]).map(([cat, tot]) => `
       <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)">
         <span style="color:var(--text-muted);font-size:13px">${cat}</span>
         <span style="font-weight:700;font-size:13px">$${formatNum(tot)}</span>
       </div>`).join('');
-    const gastosHtml = del_mes.map(g => `
-      <div class="gasto-item" onclick="abrirModal(${g.id})">
+    const movimientosHtml = movs.map(m => `
+      <div class="gasto-item" onclick="abrirModal(${m.id}, '${m.movType}')">
         <div class="gasto-info">
-          <span class="gasto-cat">${g.cat}${g.tipo==='fijo'?'<span class="badge-fijo">FIJO</span>':''}</span>
-          <span class="gasto-desc">${g.desc}</span>
-          <span class="gasto-fecha-small">${formatFecha(g.fecha)}</span>
+          <span class="gasto-cat">${m.movType === 'ingreso' ? 'Ingreso' : m.cat}${m.movType === 'gasto' && m.tipo==='fijo'?'<span class="badge-fijo">FIJO</span>':''}</span>
+          <span class="gasto-desc">${m.desc}</span>
+          <span class="gasto-fecha-small">${formatFecha(m.fecha)}</span>
         </div>
-        <span class="gasto-monto-neg">-$${formatNum(g.monto)}</span>
+        <span class="${m.movType === 'ingreso' ? 'gasto-monto-pos' : 'gasto-monto-neg'}">${m.movType === 'ingreso' ? '+' : '-'}$${formatNum(m.monto)}</span>
       </div>`).join('');
     html += `
       <div class="mes-card">
         <div class="mes-header" onclick="toggleMes('mes-h-${i}')">
           <span class="mes-nombre">📅 ${MESES[mes]} ${anio}</span>
-          <span class="mes-total">-$${formatNum(total)}</span>
+          <span class="mes-total">${total >= 0 ? '+' : '-'}$${formatNum(Math.abs(total))}</span>
         </div>
         <div class="mes-body" id="mes-h-${i}" style="display:none">
           <div style="margin-bottom:12px">${catHtml}</div>
-          <div style="display:flex;flex-direction:column;gap:8px">${gastosHtml}</div>
+          <div style="display:flex;flex-direction:column;gap:8px">${movimientosHtml}</div>
         </div>
       </div>`;
   });
-  container.innerHTML = html || '<p style="color:var(--text-muted);text-align:center;padding:30px">Sin gastos registrados</p>';
+  container.innerHTML = html || '<p style="color:var(--text-muted);text-align:center;padding:30px">Sin movimientos registrados</p>';
   renderGraficas();
 }
 
