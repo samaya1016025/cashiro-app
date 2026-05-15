@@ -20,6 +20,41 @@ function getData(key) {
 function setData(key, val) {
   localStorage.setItem(userId + '_' + key, JSON.stringify(val));
 }
+
+function normalizeIngreso(ingreso) {
+  const id = typeof ingreso.id === 'string' && !Number.isNaN(parseInt(ingreso.id, 10))
+    ? parseInt(ingreso.id, 10)
+    : ingreso.id;
+  const monto = typeof ingreso.monto === 'string' && ingreso.monto !== ''
+    ? parseFloat(ingreso.monto)
+    : ingreso.monto;
+  const desc = (ingreso.desc || 'Ingreso').toString().trim() || 'Ingreso';
+  let fecha = ingreso.fecha || '';
+  let mes = ingreso.mes;
+  let anio = ingreso.anio;
+
+  if ((mes === undefined || mes === null || anio === undefined || anio === null) && fecha) {
+    const d = new Date(fecha + 'T00:00:00');
+    if (!Number.isNaN(d.getMonth()) && !Number.isNaN(d.getFullYear())) {
+      mes = d.getMonth();
+      anio = d.getFullYear();
+    }
+  }
+
+  if (typeof mes === 'string' && mes !== '') mes = parseInt(mes, 10);
+  if (typeof anio === 'string' && anio !== '') anio = parseInt(anio, 10);
+
+  if (!fecha && typeof mes === 'number' && typeof anio === 'number') {
+    fecha = `${anio}-${String(mes + 1).padStart(2, '0')}-01`;
+  }
+
+  return { ...ingreso, id, monto, desc, fecha, mes, anio, tipo: 'ingreso' };
+}
+
+function cargarIngresos() {
+  return getData('ingresos').map(normalizeIngreso);
+}
+
 function getProfileItem(key) {
   return localStorage.getItem(userId + '_perfil_' + key) || '';
 }
@@ -309,7 +344,7 @@ async function handleGoogleLogin() {
       userId      = user.uid;
 
       const gastosInvitado    = getData('gastos');
-      const ingresosInvitado  = getData('ingresos');
+      const ingresosInvitado  = cargarIngresos();
       const serviciosInvitado = getData('servicios');
       const hayLocales = gastosInvitado.length || ingresosInvitado.length || serviciosInvitado.length;
 
@@ -372,7 +407,7 @@ function guardarIngreso() {
   if (!anio || anio < 2000 || anio > 2100) { showToast('⚠️ Año inválido'); return; }
   if (!monto || monto <= 0) { showToast('⚠️ Ingresa un monto válido'); return; }
   
-  const ingresos = getData('ingresos');
+  const ingresos = cargarIngresos();
   const fecha = new Date().toISOString().split('T')[0];
   const nuevo = { id: Date.now(), mes, anio, monto, desc, fecha, tipo: 'ingreso' };
   ingresos.push(nuevo);
@@ -457,8 +492,8 @@ function abrirModal(id, movType = 'gasto') {
 
   movInput.value = movType;
   if (movType === 'ingreso') {
-    const ingresos = getData('ingresos');
-    const i = ingresos.find(item => item.id === id);
+    const ingresos = cargarIngresos();
+    const i = ingresos.find(item => String(item.id) === String(id));
     if (!i) return;
     title.textContent = '✏️ Editar Ingreso';
     document.getElementById('edit-id').value = i.id;
@@ -472,7 +507,7 @@ function abrirModal(id, movType = 'gasto') {
     btn.style.display = 'none';
   } else {
     const gastos = getData('gastos');
-    const g = gastos.find(item => item.id === id);
+    const g = gastos.find(item => String(item.id) === String(id));
     if (!g) return;
     title.textContent = '✏️ Editar Gasto';
     document.getElementById('edit-id').value = g.id;
@@ -496,7 +531,7 @@ function abrirModal(id, movType = 'gasto') {
 
 function guardarEdicion() {
   const movType = document.getElementById('edit-movtype').value || 'gasto';
-  const id       = parseInt(document.getElementById('edit-id').value);
+  const id       = document.getElementById('edit-id').value;
   const desc     = document.getElementById('edit-desc').value.trim();
   const monto    = parseFloat(document.getElementById('edit-monto').value);
   const fecha    = document.getElementById('edit-fecha').value;
@@ -504,15 +539,15 @@ function guardarEdicion() {
   if (!monto || monto <= 0) { showToast('⚠️ Monto inválido'); return; }
 
   if (movType === 'ingreso') {
-    const ingresos = getData('ingresos');
-    const idx = ingresos.findIndex(i => i.id === id);
+    const ingresos = cargarIngresos();
+    const idx = ingresos.findIndex(i => String(i.id) === String(id));
     if (idx >= 0) {
       const date = fecha || ingresos[idx].fecha;
       const d = new Date(date + 'T00:00:00');
       const mes = !Number.isNaN(d.getMonth()) ? d.getMonth() : ingresos[idx].mes;
       const anio = !Number.isNaN(d.getFullYear()) ? d.getFullYear() : ingresos[idx].anio;
       ingresos[idx] = { id, desc, monto, fecha: date, mes, anio, tipo: 'ingreso' };
-      if (modoGoogle) guardarEnFirebase('ingresos', id, ingresos[idx]);
+      if (modoGoogle) guardarEnFirebase('ingresos', parseInt(id, 10), ingresos[idx]);
     }
     setData('ingresos', ingresos);
     cerrarModal();
@@ -522,11 +557,11 @@ function guardarEdicion() {
     const tipo     = document.getElementById('edit-tipo').value;
     const fechaFin = tipo === 'fijo' ? document.getElementById('edit-fecha-fin').value : null;
     const gastos = getData('gastos');
-    const idx    = gastos.findIndex(g => g.id === id);
+    const idx    = gastos.findIndex(g => String(g.id) === String(id));
     if (idx >= 0) {
       const activo = gastos[idx].activo !== false;
       gastos[idx]  = { id, cat, desc, monto, fecha, tipo, fechaFin, activo };
-      if (modoGoogle) guardarEnFirebase('gastos', id, gastos[idx]);
+      if (modoGoogle) guardarEnFirebase('gastos', parseInt(id, 10), gastos[idx]);
     }
     setData('gastos', gastos);
     cerrarModal();
@@ -539,32 +574,53 @@ function guardarEdicion() {
 
 function eliminarGasto() {
   const movType = document.getElementById('edit-movtype').value || 'gasto';
-  const id = parseInt(document.getElementById('edit-id').value);
+  const id = document.getElementById('edit-id').value;
   if (!confirm('¿Seguro que quieres eliminar este movimiento?')) return;
+
+  let eliminado = false;
   if (movType === 'ingreso') {
-    const ingresos = getData('ingresos').filter(i => i.id !== id);
+    const ingresos = cargarIngresos().filter(i => String(i.id) !== String(id));
     setData('ingresos', ingresos);
-    if (modoGoogle) eliminarDeFirebase('ingresos', id);
+    if (modoGoogle) eliminarDeFirebase('ingresos', parseInt(id, 10));
     showToast('🗑️ Ingreso eliminado');
+    eliminado = true;
   } else {
-    const gastos = getData('gastos').filter(g => g.id !== id);
-    setData('gastos', gastos);
-    if (modoGoogle) eliminarDeFirebase('gastos', id);
-    showToast('🗑️ Gasto eliminado');
+    const gastos = getData('gastos').filter(g => String(g.id) !== String(id));
+    if (gastos.length < getData('gastos').length) {
+      setData('gastos', gastos);
+      if (modoGoogle) eliminarDeFirebase('gastos', parseInt(id, 10));
+      showToast('🗑️ Gasto eliminado');
+      eliminado = true;
+    }
   }
+
+  if (!eliminado) {
+    const ingresos = cargarIngresos().filter(i => String(i.id) !== String(id));
+    if (ingresos.length < cargarIngresos().length) {
+      setData('ingresos', ingresos);
+      if (modoGoogle) eliminarDeFirebase('ingresos', parseInt(id, 10));
+      showToast('🗑️ Ingreso eliminado');
+      eliminado = true;
+    }
+  }
+
+  if (!eliminado) {
+    showToast('⚠️ No se encontró el movimiento para eliminar');
+  }
+
   cerrarModal();
   renderDashboard();
   renderHistorial();
 }
 
 function toggleActivoFijo() {
-  const id     = parseInt(document.getElementById('edit-id').value);
+  const id     = document.getElementById('edit-id').value;
   const gastos = getData('gastos');
-  const idx    = gastos.findIndex(g => g.id === id);
+  const idx    = gastos.findIndex(g => String(g.id) === String(id));
   if (idx < 0) return;
   gastos[idx].activo = gastos[idx].activo === false;
   setData('gastos', gastos);
-  if (modoGoogle) guardarEnFirebase('gastos', id, gastos[idx]);
+  if (modoGoogle) guardarEnFirebase('gastos', parseInt(id, 10), gastos[idx]);
   const activo = gastos[idx].activo;
   const btn    = document.getElementById('btn-toggle-activo');
   btn.textContent = activo ? '⏸️ Desactivar este gasto fijo' : '▶️ Reactivar este gasto fijo';
@@ -651,7 +707,7 @@ function renderDashboard() {
   const hoy  = new Date();
   const mes  = hoy.getMonth();
   const anio = hoy.getFullYear();
-  const ingresos     = getData('ingresos');
+  const ingresos     = cargarIngresos();
   const ingresosMes  = ingresos.filter(i => i.mes === mes && i.anio === anio);
   const totalIngreso = ingresosMes.reduce((a, i) => a + i.monto, 0);
   const gastos       = getData('gastos');
@@ -738,7 +794,7 @@ function renderHistorial() {
   const container = document.getElementById('historial-meses');
   if (!container) return;
   const gastos = getData('gastos');
-  const ingresos = getData('ingresos');
+  const ingresos = cargarIngresos();
   if (gastos.length === 0 && ingresos.length === 0) {
     container.innerHTML = '<p style="color:var(--text-muted);text-align:center;padding:30px">Sin movimientos registrados aún</p>';
     renderGraficas();
