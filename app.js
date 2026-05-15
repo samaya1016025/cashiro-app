@@ -400,7 +400,7 @@ function guardarIngreso() {
   
   const mes = parseInt(mesEl.value);
   const anio = parseInt(anioEl.value);
-  const monto = parseFloat(montoEl.value);
+  const monto = parseFloat(montoEl.value.replace(/\./g, ''));
   const desc = (descEl?.value || '').trim() || 'Ingreso';
   
   if (!mes && mes !== 0) { showToast('⚠️ Selecciona un mes'); return; }
@@ -437,7 +437,9 @@ function toggleFechaFinEdit() {
 function guardarGasto() {
   const cat      = document.getElementById('gasto-categoria').value;
   const desc     = document.getElementById('gasto-desc').value.trim();
-  const monto    = parseFloat(document.getElementById('gasto-monto').value);
+  const monto = parseFloat(
+  document.getElementById('gasto-monto').value.replace(/\./g, '')
+);
   const fecha    = document.getElementById('gasto-fecha').value;
   const tipo     = document.getElementById('gasto-tipo').value;
   const fechaFin = tipo === 'fijo' ? document.getElementById('gasto-fecha-fin').value : null;
@@ -533,7 +535,9 @@ function guardarEdicion() {
   const movType = document.getElementById('edit-movtype').value || 'gasto';
   const id       = document.getElementById('edit-id').value;
   const desc     = document.getElementById('edit-desc').value.trim();
-  const monto    = parseFloat(document.getElementById('edit-monto').value);
+const monto = parseFloat(
+  document.getElementById('edit-monto').value.replace(/\./g, '')
+);
   const fecha    = document.getElementById('edit-fecha').value;
   if (!desc)                { showToast('⚠️ Escribe una descripción'); return; }
   if (!monto || monto <= 0) { showToast('⚠️ Monto inválido'); return; }
@@ -630,7 +634,9 @@ function toggleActivoFijo() {
 // ===== SERVICIOS =====
 function guardarServicio() {
   const nombre = document.getElementById('srv-nombre').value.trim();
-  const monto  = parseFloat(document.getElementById('srv-monto').value);
+  const monto = parseFloat(
+  document.getElementById('srv-monto').value.replace(/\./g, '')
+);
   const dia    = parseInt(document.getElementById('srv-dia').value);
   if (!nombre)                     { showToast('⚠️ Escribe el nombre'); return; }
   if (!monto || monto <= 0)        { showToast('⚠️ Monto inválido'); return; }
@@ -1074,6 +1080,19 @@ function cerrarFabMenu() {
 }
 
 // ===== UTILIDADES =====
+function formatCurrencyInput(input) {
+  input.addEventListener('input', (e) => {
+    let value = e.target.value.replace(/\D/g, '');
+
+    if (!value) {
+      e.target.value = '';
+      return;
+    }
+
+    // Evita límites y problemas con Number()
+    e.target.value = value.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  });
+}
 function formatNum(n) { return Math.round(n).toLocaleString('es-CO'); }
 function formatFecha(str) {
   if (!str) return '';
@@ -1165,7 +1184,16 @@ let user = null;
       bienvenida.style.display = '';
     }
   }
-
+// Inputs con separador de miles
+[
+  'ingreso-monto',
+  'gasto-monto',
+  'srv-monto',
+  'edit-monto'
+].forEach(id => {
+  const input = document.getElementById(id);
+  if (input) formatCurrencyInput(input);
+});
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js').catch(() => {});
   }

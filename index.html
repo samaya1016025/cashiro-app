@@ -110,7 +110,12 @@
       <div class="form-group"><label>Mes</label><select id="ingreso-mes"></select></div>
       <div class="form-group"><label>Año</label><input type="number" id="ingreso-anio" value="2026" /></div>
       <div class="form-group"><label>Descripción</label><input type="text" id="ingreso-desc" placeholder="Ej: Salario, Freelance, Venta" /></div>
-      <div class="form-group"><label>Monto ($)</label><input type="number" id="ingreso-monto" placeholder="Ej: 3000000" /></div>
+      <div class="form-group"><label>Monto ($)</label><input
+  type="text"
+  id="ingreso-monto"
+  placeholder="Ej: 3.000.000"
+  inputmode="numeric"
+/></div>
       <button class="btn-primary" onclick="guardarIngreso()">Guardar ingreso</button>
     </div>
   </div>
@@ -133,7 +138,12 @@
         </select>
       </div>
       <div class="form-group"><label>Descripción</label><input type="text" id="gasto-desc" placeholder="Ej: Almuerzo, Metro, etc." /></div>
-      <div class="form-group"><label>Monto ($)</label><input type="number" id="gasto-monto" placeholder="Ej: 15000" /></div>
+      <div class="form-group"><label>Monto ($)</label><input
+  type="text"
+  id="gasto-monto"
+  placeholder="Ej: 15.000"
+  inputmode="numeric"
+/></div>
       <div class="form-group"><label>Fecha</label><input type="date" id="gasto-fecha" /></div>
       <div class="form-group">
         <label>Tipo de gasto</label>
@@ -156,7 +166,12 @@
     <div class="topbar"><span class="topbar-title">🧾 Servicios</span></div>
     <div class="form-container">
       <div class="form-group"><label>Nombre del servicio</label><input type="text" id="srv-nombre" placeholder="Ej: Agua, Luz, Internet" /></div>
-      <div class="form-group"><label>Monto aproximado ($)</label><input type="number" id="srv-monto" placeholder="Ej: 80000" /></div>
+      <div class="form-group"><label>Monto aproximado ($)</label><input
+  type="text"
+  id="srv-monto"
+  placeholder="Ej: 80.000"
+  inputmode="numeric"
+/></div>
       <div class="form-group"><label>Día de vencimiento (cada mes)</label><input type="number" id="srv-dia" placeholder="Ej: 15" min="1" max="31" /></div>
       <button class="btn-primary" onclick="guardarServicio()">Agregar servicio</button>
       <div class="section-title" style="margin-top:24px">📋 Mis servicios</div>
@@ -300,7 +315,12 @@
         </select>
       </div>
       <div class="form-group"><label>Descripción</label><input type="text" id="edit-desc" /></div>
-      <div class="form-group"><label>Monto ($)</label><input type="number" id="edit-monto" /></div>
+      <div class="form-group"><label>Monto ($)</label><input
+  type="text"
+  id="edit-monto"
+  inputmode="numeric"
+  placeholder="Ej: 1.000.000"
+/></div>
       <div class="form-group"><label>Fecha</label><input type="date" id="edit-fecha" /></div>
       <div class="form-group" id="edit-tipo-group">
         <label>Tipo</label>
