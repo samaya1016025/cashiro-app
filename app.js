@@ -637,20 +637,48 @@ function guardarServicio() {
   const monto = parseFloat(
   document.getElementById('srv-monto').value.replace(/\./g, '')
 );
-  const dia    = parseInt(document.getElementById('srv-dia').value);
-  if (!nombre)                     { showToast('⚠️ Escribe el nombre'); return; }
-  if (!monto || monto <= 0)        { showToast('⚠️ Monto inválido'); return; }
-  if (!dia || dia < 1 || dia > 31) { showToast('⚠️ Día inválido (1-31)'); return; }
-  const servicios = getData('servicios');
-  const nuevo = { id: Date.now(), nombre, monto, dia };
-  servicios.push(nuevo);
+  const dia = parseInt(document.getElementById('srv-dia').value);
+
+  if (!nombre || !monto || !dia) {
+    alert("Completa todos los campos");
+    return;
+  }
+
+  let servicios = getData('servicios');
+
+  if (window.servicioEditando) {
+    servicios = servicios.map(s =>
+      s.id == window.servicioEditando
+        ? { ...s, nombre, monto, dia }
+        : s
+    );
+
+    window.servicioEditando = null;
+  } else {
+    servicios.push({
+      id: Date.now(),
+      nombre,
+      monto,
+      dia
+    });
+  }
+
   setData('servicios', servicios);
-  if (modoGoogle) guardarEnFirebase('servicios', nuevo.id, nuevo);
+
   document.getElementById('srv-nombre').value = '';
-  document.getElementById('srv-monto').value  = '';
-  document.getElementById('srv-dia').value    = '';
-  showToast('✅ Servicio agregado');
-  renderServicios();
+  document.getElementById('srv-monto').value = '';
+  document.getElementById('srv-dia').value = '';
+
+  showToast(window.servicioEditando ? '✅ Servicio actualizado' : '✅ Servicio agregado');
+
+renderServicios();
+renderDashboard();
+
+window.servicioEditando = null;
+
+showToast('✅ Servicio actualizado');
+
+showScreen('screen-dashboard');
 }
 
 function eliminarServicio(id) {
@@ -783,14 +811,48 @@ function renderVencimientos(hoy) {
     else                { badge = `✅ ${dias}d`;  clase = 'badge-ok';      }
     return { s, dias, badge, clase, venc };
   }).sort((a, b) => a.dias - b.dias);
-  lista.innerHTML = items.map(({ s, venc, badge, clase }) => `
-    <div class="venc-item">
-      <div class="venc-info">
-        <span class="venc-nombre">${s.nombre}</span>
-        <span class="venc-fecha">Vence: ${formatFecha(venc.toISOString().split('T')[0])} · $${formatNum(s.monto)}</span>
-      </div>
-      <span class="venc-badge ${clase}">${badge}</span>
-    </div>`).join('');
+lista.innerHTML = items.map(({ s, venc, badge, clase }) => `
+  <div class="venc-item" onclick="editarServicio('${s.id}')">
+    <div class="venc-info">
+      <span class="venc-nombre">${s.nombre}</span>
+      <span class="venc-fecha">
+        Vence: ${formatFecha(venc.toISOString().split('T')[0])}
+        · $${formatNum(s.monto)}
+      </span>
+    </div>
+
+    <span class="venc-badge ${clase}">${badge}</span>
+  </div>
+`).join('');
+function editarServicio(id) {
+  const servicios = getData('servicios');
+  const servicio = servicios.find(s => s.id == id);
+
+  if (!servicio) return;
+
+  document.getElementById('srv-nombre').value = servicio.nombre;
+  document.getElementById('srv-monto').value = servicio.monto;
+  document.getElementById('srv-dia').value = servicio.dia;
+
+  window.servicioEditando = id;
+
+  showScreen('screen-servicios');
+}
+}
+
+function editarServicio(id) {
+  const servicios = getData('servicios');
+  const servicio = servicios.find(s => s.id == id);
+
+  if (!servicio) return;
+
+  document.getElementById('srv-nombre').value = servicio.nombre;
+  document.getElementById('srv-monto').value = servicio.monto;
+  document.getElementById('srv-dia').value = servicio.dia;
+
+  showScreen('screen-servicios');
+
+  window.servicioEditando = id;
 }
 
 // ===== HISTORIAL =====
@@ -1198,3 +1260,27 @@ let user = null;
     navigator.serviceWorker.register('./sw.js').catch(() => {});
   }
 });
+function toggleSection(section) {
+  let content;
+  let arrow;
+
+  if (section === "vencimientos") {
+    content = document.getElementById("lista-vencimientos");
+    arrow = document.getElementById("arrow-vencimientos");
+  }
+
+  if (section === "movimientos") {
+    content = document.getElementById("lista-gastos-recientes");
+    arrow = document.getElementById("arrow-movimientos");
+  }
+
+  const isHidden = content.style.display === "none";
+
+  if (isHidden) {
+    content.style.display = "flex";
+    arrow.textContent = "▲";
+  } else {
+    content.style.display = "none";
+    arrow.textContent = "▼";
+  }
+}
