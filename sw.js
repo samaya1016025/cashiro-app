@@ -1,4 +1,4 @@
-const CACHE_NAME = 'cashiro-v15';
+const CACHE_NAME = 'cashiro-v16';
 const BASE = '/cashiro-app';
 const urlsToCache = [
   BASE + '/',
