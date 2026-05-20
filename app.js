@@ -801,14 +801,16 @@ function renderVencimientos(hoy) {
     lista.innerHTML = '<p style="color:var(--text-muted);text-align:center;padding:20px">Sin servicios registrados</p>';
     return;
   }
+const hoyInicio = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
   const items = servicios.map(s => {
     let venc = new Date(hoy.getFullYear(), hoy.getMonth(), s.dia);
-    if (venc < hoy) venc = new Date(hoy.getFullYear(), hoy.getMonth() + 1, s.dia);
-    const dias = Math.ceil((venc - hoy) / 86400000);
+    if (venc < hoyInicio) venc = new Date(hoy.getFullYear(), hoy.getMonth() + 1, s.dia);
+    const dias = Math.ceil((venc - hoyInicio) / 86400000);
     let badge, clase;
-    if (dias <= 3)      { badge = `⚠️ ${dias}d`; clase = 'badge-urgente'; }
-    else if (dias <= 7) { badge = `🔔 ${dias}d`; clase = 'badge-pronto';  }
-    else                { badge = `✅ ${dias}d`;  clase = 'badge-ok';      }
+    if (dias === 0)     { badge = `🔴 Hoy`;       clase = 'badge-urgente'; }
+    else if (dias <= 3) { badge = `⚠️ ${dias}d`;  clase = 'badge-urgente'; }
+    else if (dias <= 7) { badge = `🔔 ${dias}d`;  clase = 'badge-pronto';  }
+    else                { badge = `✅ ${dias}d`;   clase = 'badge-ok';      }
     return { s, dias, badge, clase, venc };
   }).sort((a, b) => a.dias - b.dias);
 lista.innerHTML = items.map(({ s, venc, badge, clase }) => `

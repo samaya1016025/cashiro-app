@@ -1237,10 +1237,3 @@ body {
   60%  { width: 75%; }
   100% { width: 100%; }
 }
-.collapsible-title {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  cursor: pointer;
-  user-select: none;
-}
