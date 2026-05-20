@@ -34,7 +34,7 @@ body {
 .screen { display: none; min-height: 100vh; padding-bottom: calc(65px + env(safe-area-inset-bottom, 0px)); }
 .screen.active { display: block; }
 #screen-bienvenida { padding-bottom: 0 !important; }
-.screen.active { display: block; }
+
 
 /* ===== LOGIN ===== */
 .login-container {
@@ -313,19 +313,6 @@ body {
   font-size: 15px;
   font-weight: 600;
 }
-.btn-danger-outline {
-  background: rgba(255,77,109,0.08);
-  border: 1.5px solid rgba(255,77,109,0.3);
-  border-radius: 14px;
-  color: var(--danger);
-  cursor: pointer;
-  font-size: 15px;
-  font-weight: 600;
-  padding: 14px;
-  width: 100%;
-  margin-top: 4px;
-}
-
 /* ===== TOPBAR ===== */
 .topbar {
   display: flex;
@@ -1011,52 +998,6 @@ body {
   width: 100%;
   margin-top: 4px;
 }
-.perfil-email { font-size: 13px; color: var(--text-muted); margin: 0; }
-.perfil-plan   { font-size: 13px; color: var(--text-muted); margin: 0; }
-.feature-svg { flex-shrink: 0; }
-.premium-lista li {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.perfil-nombre { font-size: 20px; font-weight: 800; }
-.perfil-plan   { font-size: 13px; color: var(--text-muted); }
-.perfil-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-.perfil-card-title { font-size: 16px; font-weight: 700; }
-.perfil-card-sub   { font-size: 13px; color: var(--text-muted); }
-.premium-card {
-  border-color: rgba(0,227,140,0.25);
-  background: linear-gradient(135deg, rgba(0,227,140,0.05), rgba(58,134,255,0.05));
-}
-.premium-lista {
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  font-size: 14px;
-  color: var(--text-muted);
-}
-.btn-premium {
-  background: linear-gradient(90deg, #00E38C, #3A86FF);
-  border: none;
-  border-radius: 12px;
-  color: #0B0F1A;
-  cursor: pointer;
-  font-size: 15px;
-  font-weight: 800;
-  padding: 14px;
-  margin-top: 4px;
-  opacity: 0.7;
-}
-
 /* ===== TOAST ===== */
 .toast {
   position: fixed;
