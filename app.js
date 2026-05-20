@@ -1083,40 +1083,152 @@ function generarAnalisisMovimientos() {
         ? `-${Math.abs(cambio)}% vs ${MESES[prevMes]} ${prevAnio}`
         : `igual a ${MESES[prevMes]} ${prevAnio}`;
 
-  const fixedText = gastosFijos
-    ? `$${formatNum(gastosFijos)}`
-    : 'Sin gastos fijos activos';
+const fixedText = gastosFijos
+  ? `$${formatNum(gastosFijos)}`
+  : 'Sin gastos fijos activos';
 
- const badgeClass = cambio > 0 ? 'analysis-badge negativo' : 'analysis-badge';
-  setAnalisisText(`
-    <div class="analysis-summary">
-      <div class="analysis-row">
-        <div class="analysis-row-header">
-          <div>
-            <div class="analysis-key">Total gastado este mes</div>
-            <div class="analysis-value">$${formatNum(totalActual)}</div>
-          </div>
-          <span class="${badgeClass}">${cambioTexto}</span>
-        </div>
-      </div>
-      <div class="analysis-row">
-        <div class="analysis-key">Categoría principal</div>
-        <div class="analysis-row-header">
-          <div class="analysis-value">${topCat}</div>
-          <span class="analysis-badge">${participacionTop}% del total</span>
-        </div>
-      </div>
-      <div class="analysis-row">
-        <div class="analysis-key">Gastos fijos del mes</div>
-        <div class="analysis-value">${fixedText}</div>
-      </div>
-      <div class="analysis-row">
-        <div class="analysis-list-title">🏆 Top 3 gastos</div>
-        <div class="analysis-list">${topGastosHtml}</div>
-      </div>
-      <div class="analysis-note">📊 Resumen de ${MESES[mes]} ${anio}</div>
+  const ingresos = cargarIngresos();
+const ingresosMes = ingresos.filter(i => i.mes === mes && i.anio === anio);
+const totalIngresos = ingresosMes.reduce((sum, ingreso) => sum + ingreso.monto, 0);
+
+const porcentajeUso = totalIngresos > 0
+  ? Math.round((totalActual / totalIngresos) * 100)
+  : 0;
+
+let mensajeIA = '';
+
+if (porcentajeUso >= 90) {
+  mensajeIA = '⚠️ Estás usando casi todos tus ingresos este mes. Reduce gastos variables para evitar quedarte sin liquidez.';
+} else if (porcentajeUso >= 70) {
+  mensajeIA = '💡 Tus gastos están relativamente altos. Revisa tus categorías principales y considera optimizar algunos pagos.';
+} else if (porcentajeUso >= 40) {
+  mensajeIA = '✅ Tus finanzas están equilibradas. Mantienes un buen control entre ingresos y gastos.';
+} else {
+  mensajeIA = '🚀 Excelente manejo financiero este mes. Tus gastos están muy por debajo de tus ingresos.';
+}
+
+let tendenciaTexto = '';
+
+if (cambio === null) {
+  tendenciaTexto = `No hay datos suficientes para comparar con ${MESES[prevMes]}.`;
+} else if (cambio > 0) {
+  tendenciaTexto = `Tus gastos aumentaron ${Math.abs(cambio)}% frente a ${MESES[prevMes]}.`;
+} else if (cambio < 0) {
+  tendenciaTexto = `Lograste reducir tus gastos ${Math.abs(cambio)}% frente a ${MESES[prevMes]}.`;
+} else {
+  tendenciaTexto = 'Tus gastos se mantuvieron iguales respecto al mes anterior.';
+}
+
+let estadoFinanciero = '';
+
+if (porcentajeUso < 50) {
+  estadoFinanciero = '🟢 Excelente control financiero';
+} else if (porcentajeUso < 75) {
+  estadoFinanciero = '🟡 Finanzas saludables';
+} else if (porcentajeUso < 90) {
+  estadoFinanciero = '🟠 Gasto elevado';
+} else {
+  estadoFinanciero = '🔴 Riesgo financiero';
+}
+
+let insight = '';
+
+if (cambio === null) {
+  insight = 'Este es tu primer mes con suficiente información para generar análisis inteligentes.';
+} else if (cambio > 20) {
+  insight = 'Tus gastos aumentaron considerablemente frente al mes pasado.';
+} else if (cambio < -10) {
+  insight = 'Lograste reducir tus gastos frente al mes anterior.';
+} else {
+  insight = 'Tus gastos se mantuvieron estables este mes.';
+}
+
+let recomendacion = '';
+
+if (porcentajeUso > 90) {
+  recomendacion = 'Te recomiendo reducir gastos variables para evitar quedarte sin liquidez antes de terminar el mes.';
+} else if (participacionTop > 45) {
+  recomendacion = `La categoría "${topCat}" está consumiendo gran parte de tu presupuesto.`;
+} else if (gastosFijos > totalIngresos * 0.6) {
+  recomendacion = 'Tus gastos fijos representan una parte importante de tus ingresos.';
+} else {
+  recomendacion = 'Tu distribución de gastos se ve equilibrada actualmente.';
+}
+
+const ahorroEstimado = Math.max(0, totalIngresos - totalActual);
+
+const badgeClass = cambio > 0
+  ? 'analysis-badge negativo'
+  : 'analysis-badge';
+
+setAnalisisText(`
+  <div class="analysis-summary">
+
+    <div class="analysis-row">
+      <div class="analysis-key">🤖 Resumen inteligente</div>
+      <div class="analysis-text">${insight}</div>
     </div>
-  `);
+
+    <div class="analysis-row">
+      <div class="analysis-key">💰 Total gastado</div>
+      <div class="analysis-value">$${formatNum(totalActual)}</div>
+      <span class="${badgeClass}">${cambioTexto}</span>
+    </div>
+
+    <div class="analysis-row">
+      <div class="analysis-key">📊 Estado financiero</div>
+      <div class="analysis-value">${estadoFinanciero}</div>
+    </div>
+
+    <div class="analysis-row">
+      <div class="analysis-key">🔥 Categoría dominante</div>
+      <div class="analysis-value">${topCat}</div>
+      <div class="analysis-text">
+        Representa el ${participacionTop}% de tus gastos del mes.
+      </div>
+    </div>
+
+    <div class="analysis-row">
+      <div class="analysis-key">🏦 Gastos fijos</div>
+      <div class="analysis-value">${fixedText}</div>
+    </div>
+
+    <div class="analysis-row">
+      <div class="analysis-key">💡 Recomendación IA</div>
+      <div class="analysis-text">${recomendacion}</div>
+    </div>
+
+    <div class="analysis-row">
+      <div class="analysis-key">💸 Posible ahorro</div>
+      <div class="analysis-value">
+        $${formatNum(ahorroEstimado)}
+      </div>
+    </div>
+
+    <div class="analysis-row">
+  <div class="analysis-key">📈 Uso de ingresos</div>
+  <div class="analysis-value">${porcentajeUso}%</div>
+  <div class="analysis-text">
+    ${totalIngresos > 0
+      ? `Has utilizado $${formatNum(totalActual)} de $${formatNum(totalIngresos)} disponibles este mes.`
+      : 'No tienes ingresos registrados este mes.'}
+  </div>
+</div>
+
+<div class="analysis-row">
+  <div class="analysis-key">📉 Tendencia mensual</div>
+  <div class="analysis-text">
+    ${tendenciaTexto}
+  </div>
+</div>
+
+    <div class="analysis-row">
+      <div class="analysis-list-title">🏆 Top gastos del mes</div>
+      <div class="analysis-list">${topGastosHtml}</div>
+    </div>
+
+  </div>
+`);
   }
 
 // ===== FIREBASE HELPERS =====
