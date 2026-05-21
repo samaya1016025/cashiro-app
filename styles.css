@@ -421,6 +421,18 @@ body {
   padding: 0 16px;
   margin-bottom: 10px;
 }
+.collapsible-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  width: 100%;
+}
+
+.collapsible-header span:last-child {
+  font-size: 14px;
+  color: var(--text-muted);
+}
 
 /* ===== VENCIMIENTOS ===== */
 .vencimientos-list, .gastos-list {

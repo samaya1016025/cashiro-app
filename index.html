@@ -97,10 +97,19 @@
         <span class="balance-bar-label" id="balance-bar-pct">0% gastado</span>
       </div>
     </div>
-    <div class="section-title">📅 Próximos vencimientos</div>
-    <div id="lista-vencimientos" class="vencimientos-list"></div>
-    <div class="section-title">🔄 Últimos movimientos</div>
-    <div id="lista-gastos-recientes" class="gastos-list"></div>
+<div class="section-title collapsible-header" onclick="toggleSection('vencimientos')">
+  <span>📅 Próximos vencimientos</span>
+  <span id="arrow-vencimientos">▲</span>
+</div>
+
+<div id="lista-vencimientos" class="vencimientos-list"></div>
+
+<div class="section-title collapsible-header" onclick="toggleSection('movimientos')">
+  <span>🔄 Últimos movimientos</span>
+  <span id="arrow-movimientos">▲</span>
+</div>
+
+<div id="lista-gastos-recientes" class="gastos-list"></div>
   </div>
 
   <!-- INGRESO -->
