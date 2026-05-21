@@ -635,8 +635,8 @@ function toggleActivoFijo() {
 function guardarServicio() {
   const nombre = document.getElementById('srv-nombre').value.trim();
   const monto = parseFloat(
-  document.getElementById('srv-monto').value.replace(/\./g, '')
-);
+    document.getElementById('srv-monto').value.replace(/\./g, '')
+  );
   const dia = parseInt(document.getElementById('srv-dia').value);
 
   if (!nombre || !monto || !dia) {
@@ -652,33 +652,26 @@ function guardarServicio() {
         ? { ...s, nombre, monto, dia }
         : s
     );
-
+    const actualizado = servicios.find(s => s.id == window.servicioEditando);
+    if (modoGoogle && actualizado) guardarEnFirebase('servicios', actualizado.id, actualizado);
     window.servicioEditando = null;
+    showToast('✅ Servicio actualizado');
   } else {
-    servicios.push({
-      id: Date.now(),
-      nombre,
-      monto,
-      dia
-    });
+    const nuevo = { id: Date.now(), nombre, monto, dia };
+    servicios.push(nuevo);
+    if (modoGoogle) guardarEnFirebase('servicios', nuevo.id, nuevo);
+    showToast('✅ Servicio agregado');
   }
 
   setData('servicios', servicios);
 
   document.getElementById('srv-nombre').value = '';
-  document.getElementById('srv-monto').value = '';
-  document.getElementById('srv-dia').value = '';
+  document.getElementById('srv-monto').value  = '';
+  document.getElementById('srv-dia').value    = '';
 
-  showToast(window.servicioEditando ? '✅ Servicio actualizado' : '✅ Servicio agregado');
-
-renderServicios();
-renderDashboard();
-
-window.servicioEditando = null;
-
-showToast('✅ Servicio actualizado');
-
-showScreen('screen-dashboard');
+  renderServicios();
+  renderDashboard();
+  showScreen('screen-dashboard');
 }
 
 function eliminarServicio(id) {
