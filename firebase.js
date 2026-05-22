@@ -68,3 +68,25 @@ async function eliminarDato(userId, coleccion, id) {
     return false;
   }
 }
+
+async function guardarPerfil(userId, data) {
+  try {
+    await db.collection('usuarios').doc(userId)
+      .collection('perfil').doc('datos').set(data, { merge: true });
+    return true;
+  } catch(e) {
+    console.error(e);
+    return false;
+  }
+}
+
+async function obtenerPerfil(userId) {
+  try {
+    const doc = await db.collection('usuarios').doc(userId)
+      .collection('perfil').doc('datos').get();
+    return doc.exists ? doc.data() : null;
+  } catch(e) {
+    console.error(e);
+    return null;
+  }
+}

@@ -146,6 +146,9 @@ function saveNombrePerfil() {
   renderPerfilUsuario();
   setTimeout(() => {
     setProfileItem('nombre', parsedName);
+    if (modoGoogle && currentUser) {
+      guardarPerfil(currentUser.uid, { nombre: parsedName });
+    }
     profileNameDraft = parsedName;
     isEditingName = false;
     loadingSaveProfile = false;
@@ -156,13 +159,25 @@ function saveNombrePerfil() {
 function handleProfilePhoto(event) {
   const file = event.target.files && event.target.files[0];
   if (!file) return;
+
+  if (file.size > 1024 * 1024) {
+    showToast('⚠️ La foto debe pesar menos de 1MB');
+    return;
+  }
+
   const reader = new FileReader();
-  reader.onload = () => {
+  reader.onload = async () => {
     const dataUrl = reader.result;
     if (typeof dataUrl === 'string') {
       setProfileItem('foto', dataUrl);
       renderPerfilUsuario();
-      showToast('✅ Foto de perfil guardada');
+      if (modoGoogle && currentUser) {
+        showToast('⏳ Guardando foto...');
+        const ok = await guardarPerfil(currentUser.uid, { foto: dataUrl });
+        showToast(ok ? '✅ Foto guardada en la nube' : '⚠️ Foto guardada solo en este dispositivo');
+      } else {
+        showToast('✅ Foto de perfil guardada');
+      }
     }
   };
   reader.readAsDataURL(file);
@@ -348,11 +363,17 @@ async function handleGoogleLogin() {
       const serviciosInvitado = getData('servicios');
       const hayLocales = gastosInvitado.length || ingresosInvitado.length || serviciosInvitado.length;
 
-      const [gastosNube, ingresosNube, serviciosNube] = await Promise.all([
+const [gastosNube, ingresosNube, serviciosNube, perfilNube] = await Promise.all([
         obtenerColeccion(user.uid, 'gastos'),
         obtenerColeccion(user.uid, 'ingresos'),
-        obtenerColeccion(user.uid, 'servicios')
+        obtenerColeccion(user.uid, 'servicios'),
+        obtenerPerfil(user.uid)
       ]);
+
+      if (perfilNube) {
+        if (perfilNube.foto)   setProfileItem('foto',   perfilNube.foto);
+        if (perfilNube.nombre) setProfileItem('nombre', perfilNube.nombre);
+      }
       const hayNube = gastosNube.length || ingresosNube.length || serviciosNube.length;
 
       if (hayLocales && !hayNube) {
