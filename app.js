@@ -1250,15 +1250,15 @@ function cerrarFabMenu() {
 
 // ===== UTILIDADES =====
 function formatCurrencyInput(input) {
+  input.setAttribute('type', 'text');
+  input.setAttribute('inputmode', 'numeric');
+  input.setAttribute('pattern', '[0-9]*');
   input.addEventListener('input', (e) => {
     let value = e.target.value.replace(/\D/g, '');
-
     if (!value) {
       e.target.value = '';
       return;
     }
-
-    // Evita límites y problemas con Number()
     e.target.value = value.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
   });
 }
