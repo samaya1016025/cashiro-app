@@ -1190,3 +1190,22 @@ body {
   60%  { width: 75%; }
   100% { width: 100%; }
 }
+
+/* ===== PREMIUM PRECIO ===== */
+.premium-precio {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-top: 4px;
+}
+.precio-monto {
+  font-size: 24px;
+  font-weight: 900;
+  background: linear-gradient(90deg, #00E38C, #3A86FF);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.precio-periodo {
+  font-size: 13px;
+  color: var(--text-muted);
+}
