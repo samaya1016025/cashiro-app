@@ -962,22 +962,33 @@ body {
   margin: 0;
 }
 .premium-card {
-  background: linear-gradient(180deg, rgba(0,227,140,0.08), rgba(58,134,255,0.07));
-  border-color: rgba(0,227,140,0.18);
+  background: linear-gradient(160deg, rgba(0,227,140,0.07), rgba(58,134,255,0.06));
+  border-color: rgba(0,227,140,0.2);
+  gap: 12px;
 }
 .premium-header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
-  gap: 10px;
+  gap: 8px;
 }
 .premium-badge {
   color: #0B0F1A;
-  background: rgba(255,255,255,0.95);
+  background: linear-gradient(90deg, #00E38C, #3A86FF);
   border-radius: 999px;
-  padding: 4px 10px;
+  padding: 5px 12px;
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 800;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.premium-lista {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 0;
+  margin: 0;
 }
 .premium-lista li {
   display: flex;
@@ -985,6 +996,14 @@ body {
   gap: 10px;
   font-size: 14px;
   color: var(--text-muted);
+}
+.premium-lista li::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: linear-gradient(90deg, #00E38C, #3A86FF);
+  flex-shrink: 0;
 }
 .btn-premium {
   background: linear-gradient(90deg, #00E38C, #3A86FF);
