@@ -790,7 +790,11 @@ function renderDashboard() {
     ...ingresos.map(i => ({ ...i, movType: 'ingreso', fecha: i.fecha || `${i.anio}-${String(i.mes + 1).padStart(2, '0')}-01` }))
   ]
     .filter(m => m.fecha)
-    .sort((a, b) => new Date(b.fecha) - new Date(a.fecha))
+.sort((a, b) => {
+      const diff = new Date(b.fecha) - new Date(a.fecha);
+      if (diff !== 0) return diff;
+      return Number(b.id) - Number(a.id);
+    })
     .slice(0, 5);
 
   const listaG = document.getElementById('lista-gastos-recientes');
@@ -903,7 +907,11 @@ function renderHistorial() {
     const movs = [
       ...obtenerGastosDeMes(gastos, mes, anio).map(g => ({ ...g, movType: 'gasto' })),
       ...ingresos.filter(j => j.mes === mes && j.anio === anio).map(j => ({ ...j, movType: 'ingreso' }))
-    ].sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+    ].sort((a, b) => {
+      const diff = new Date(b.fecha) - new Date(a.fecha);
+      if (diff !== 0) return diff;
+      return Number(b.id) - Number(a.id);
+    });
     const totalGastos = movs.filter(m => m.movType === 'gasto').reduce((s, m) => s + m.monto, 0);
     const totalIngresos = movs.filter(m => m.movType === 'ingreso').reduce((s, m) => s + m.monto, 0);
     const total = totalIngresos - totalGastos;
