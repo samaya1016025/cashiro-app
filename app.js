@@ -820,6 +820,9 @@ function renderVencimientos(hoy) {
     return;
   }
 const hoyInicio = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
+const totalServicios = servicios.reduce((acc, s) => {
+  return acc + Number(s.monto || 0);
+}, 0);
   const items = servicios.map(s => {
     let venc = new Date(hoy.getFullYear(), hoy.getMonth(), s.dia);
     if (venc < hoyInicio) venc = new Date(hoy.getFullYear(), hoy.getMonth() + 1, s.dia);
@@ -831,19 +834,28 @@ const hoyInicio = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
     else                { badge = `✅ ${dias}d`;   clase = 'badge-ok';      }
     return { s, dias, badge, clase, venc };
   }).sort((a, b) => a.dias - b.dias);
-lista.innerHTML = items.map(({ s, venc, badge, clase }) => `
-  <div class="venc-item" onclick="editarServicio('${s.id}')">
-    <div class="venc-info">
-      <span class="venc-nombre">${s.nombre}</span>
-      <span class="venc-fecha">
-        Vence: ${formatFecha(venc.toISOString().split('T')[0])}
-        · $${formatNum(s.monto)}
-      </span>
-    </div>
-
-    <span class="venc-badge ${clase}">${badge}</span>
+lista.innerHTML = `
+  <div class="servicios-total-card">
+    <span class="servicios-total-label">Total servicios</span>
+    <span class="servicios-total-monto">
+      $${formatNum(totalServicios)}/mes
+    </span>
   </div>
-`).join('');
+
+  ${items.map(({ s, venc, badge, clase }) => `
+    <div class="venc-item" onclick="editarServicio('${s.id}')">
+      <div class="venc-info">
+        <span class="venc-nombre">${s.nombre}</span>
+        <span class="venc-fecha">
+          Vence: ${formatFecha(venc.toISOString().split('T')[0])}
+          · $${formatNum(s.monto)}
+        </span>
+      </div>
+
+      <span class="venc-badge ${clase}">${badge}</span>
+    </div>
+  `).join('')}
+`;
 function editarServicio(id) {
   const servicios = getData('servicios');
   const servicio = servicios.find(s => s.id == id);
