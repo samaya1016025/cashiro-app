@@ -221,8 +221,7 @@ function showScreen(id) {
   if (id === 'screen-historial') renderHistorial();
   if (id === 'screen-ingreso')   poblarSelectMes();
   if (id === 'screen-gasto') {
-    const hoy = new Date().toISOString().split('T')[0];
-    document.getElementById('gasto-fecha').value = hoy;
+document.getElementById('gasto-fecha').value = getFechaLocal();
   }
   window.scrollTo(0, 0);
 }
@@ -429,7 +428,7 @@ function guardarIngreso() {
   if (!monto || monto <= 0) { showToast('⚠️ Ingresa un monto válido'); return; }
   
   const ingresos = cargarIngresos();
-  const fecha = new Date().toISOString().split('T')[0];
+  const fecha = getFechaLocal();
   const nuevo = { id: Date.now(), mes, anio, monto, desc, fecha, tipo: 'ingreso' };
   ingresos.push(nuevo);
   setData('ingresos', ingresos);
@@ -753,13 +752,19 @@ function renderDashboard() {
   const hoy  = new Date();
   const mes  = hoy.getMonth();
   const anio = hoy.getFullYear();
-  const ingresos     = cargarIngresos();
+const ingresos     = cargarIngresos();
+  const gastos       = getData('gastos');
+
+  // Saldo acumulado total (todos los ingresos menos todos los gastos)
+  const totalIngresoAcumulado = ingresos.reduce((a, i) => a + (i.monto || 0), 0);
+  const totalGastosAcumulado  = gastos.reduce((a, g) => a + (g.monto || 0), 0);
+  const saldo = totalIngresoAcumulado - totalGastosAcumulado;
+
+  // Totales solo del mes actual para mostrar en el subtítulo
   const ingresosMes  = ingresos.filter(i => i.mes === mes && i.anio === anio);
   const totalIngreso = ingresosMes.reduce((a, i) => a + i.monto, 0);
-  const gastos       = getData('gastos');
   const gastosMes    = obtenerGastosDeMes(gastos, mes, anio);
   const totalGastos  = gastosMes.reduce((a, g) => a + g.monto, 0);
-  const saldo        = totalIngreso - totalGastos;
 
   document.getElementById('saldo-display').textContent = '$' + formatNum(saldo);
   document.getElementById('mes-display').textContent =
@@ -847,7 +852,7 @@ lista.innerHTML = `
       <div class="venc-info">
         <span class="venc-nombre">${s.nombre}</span>
         <span class="venc-fecha">
-          Vence: ${formatFecha(venc.toISOString().split('T')[0])}
+          Vence: ${formatFecha(`${venc.getFullYear()}-${String(venc.getMonth()+1).padStart(2,'0')}-${String(venc.getDate()).padStart(2,'0')}`)}
           · $${formatNum(s.monto)}
         </span>
       </div>
@@ -1290,6 +1295,14 @@ function cerrarFabMenu() {
 }
 
 // ===== UTILIDADES =====
+
+function getFechaLocal() {
+  const hoy = new Date();
+ const year  = hoy.getFullYear();
+  const month = String(hoy.getMonth() + 1).padStart(2, '0');
+  const day   = String(hoy.getDate()).padStart(2, '0');
+ return `${year}-${month}-${day}`;
+}
 function formatCurrencyInput(input) {
   input.setAttribute('type', 'text');
   input.setAttribute('inputmode', 'numeric');
